@@ -1,0 +1,50 @@
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title>ต่ออายุใบอนุญาตขนส่ง</title>
+  <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" />
+</head>
+<body class="bg-gray-100">
+  <div class="max-w-md mx-auto p-6 bg-white rounded-xl shadow-md mt-6">
+    <h2 class="text-2xl font-bold text-center text-blue-600 mb-4">ต่ออายุใบอนุญาต</h2>
+    <div id="userInfo" class="text-sm text-gray-600 mb-4"></div>
+    <form id="renewForm" class="space-y-3">
+      <input type="text" id="licenseNo" placeholder="เลขที่ใบอนุญาต" class="w-full border rounded px-3 py-2" required>
+      <input type="date" id="approveDate" class="w-full border rounded px-3 py-2" required>
+      <input type="date" id="expireDate" class="w-full border rounded px-3 py-2" required>
+      <button type="submit" class="w-full bg-blue-600 text-white rounded px-4 py-2">✅ อัปเดต</button>
+      <div id="msg" class="text-center mt-2"></div>
+    </form>
+  </div>
+  <script>
+    const liffId = "YOUR_LIFF_ID";
+    const apiUrl = "YOUR_GAS_DEPLOY_URL";
+    document.addEventListener("DOMContentLoaded", async () => {
+      await liff.init({ liffId });
+      if (!liff.isLoggedIn()) {
+        liff.login({ redirectUri: location.href });
+        return;
+      }
+      const profile = await liff.getProfile();
+      document.getElementById("userInfo").innerHTML = `👤 ${profile.displayName} <br> 🆔 ${profile.userId}`;
+      document.getElementById("renewForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const data = {
+          action: "update",
+          licenseNo: document.getElementById("licenseNo").value,
+          approveDate: document.getElementById("approveDate").value,
+          expireDate: document.getElementById("expireDate").value,
+          userId: profile.userId,
+          displayName: profile.displayName
+        };
+        const res = await fetch(apiUrl, { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(data) });
+        const text = await res.text();
+        document.getElementById("msg").textContent = text.includes("OK") ? "✅ อัปเดตสำเร็จ" : "❌ เกิดข้อผิดพลาด: " + text;
+      });
+    });
+  </script>
+</body>
+</html>

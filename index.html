@@ -49,51 +49,52 @@
     <div class="msg" id="msg"></div>
   </form>
 
-  <script>
-    const liffId = "2007647972-rZOy6klP"; // ✅ LIFF ID กลุ่มวิชาการขนส่ง
-    const postUrl = "https://script.google.com/macros/s/AKfycbxMv44V7VE16_OXWgb4ue4LF6GJgd4wkEpn1i3LLWVFwb1VCxz-f9pdFhFjvfXzThvFRA/exec";
+ <script>
+  const liffId = "2007647972-rZOy6klP"; // ✅ LIFF ID ของคุณ
+  const postUrl = "https://script.google.com/macros/s/AKfycbxMv44V7VE16_OXWgb4ue4LF6GJgd4wkEpn1i3LLWVFwb1VCxz-f9pdFhFjvfXzThvFRA/exec";
 
-    async function main() {
-      await liff.init({ liffId });
-      if (!liff.isLoggedIn()) {
-        liff.login({ redirectUri: location.href });
-        return;
-      }
-      const profile = await liff.getProfile();
-      document.getElementById("displayName").textContent = profile.displayName;
-      document.getElementById("userId").textContent = profile.userId;
-      document.getElementById("userInfo").style.display = "block";
-      document.getElementById("registerForm").style.display = "block";
+  async function main() {
+    await liff.init({ liffId });
+    if (!liff.isLoggedIn()) {
+      liff.login({ redirectUri: location.href });
+      return;
     }
+    const profile = await liff.getProfile();
+    document.getElementById("displayName").textContent = profile.displayName;
+    document.getElementById("userId").textContent = profile.userId;
+    document.getElementById("userInfo").style.display = "block";
+    document.getElementById("registerForm").style.display = "block";
 
-    const query = new URLSearchParams({
-  action: "register"&
-  userId: userId &
-  displayName: displayName &
-  licenseNo: document.getElementById("licenseNo").value &
-  citizenId: document.getElementById("citizenId").value &
-  fullName: document.getElementById("fullName").value &
-  businessType: document.getElementById("businessType").value &
-  approveDate: document.getElementById("approveDate").value &
-  expireDate: document.getElementById("expireDate").value
-}).toString();
+    document.getElementById("registerBtn").addEventListener("click", () => {
+      const params = new URLSearchParams({
+        action: "register",
+        userId: profile.userId,
+        displayName: profile.displayName,
+        licenseNo: document.getElementById("licenseNo").value,
+        citizenId: document.getElementById("citizenId").value,
+        fullName: document.getElementById("fullName").value,
+        businessType: document.getElementById("businessType").value,
+        approveDate: document.getElementById("approveDate").value,
+        expireDate: document.getElementById("expireDate").value
+      });
 
-const url = `${postUrl}?${query}`;
-fetch(url, { method: "GET" })
-  .then((res) => res.text())
-  .then((text) => {
-    if (text === "OK") {
-      document.getElementById("status").innerHTML = "✅ ลงทะเบียนสำเร็จ";
-    } else {
-      document.getElementById("status").innerHTML = "❌ ไม่สามารถลงทะเบียนได้";
-    }
-  })
-  .catch(() => {
-    document.getElementById("status").innerHTML = "❌ ไม่สามารถเชื่อมต่อได้";
-  });
+      const url = `${postUrl}?${params.toString()}`;
+      fetch(url, { method: "GET" })
+        .then((res) => res.text())
+        .then((text) => {
+          if (text === "OK") {
+            document.getElementById("status").innerHTML = "✅ ลงทะเบียนสำเร็จ";
+          } else {
+            document.getElementById("status").innerHTML = "❌ ไม่สามารถลงทะเบียนได้";
+          }
+        })
+        .catch(() => {
+          document.getElementById("status").innerHTML = "❌ ไม่สามารถเชื่อมต่อได้";
+        });
+    });
+  }
 
-
-    main();
-  </script>
+  main();
+</script>
 </body>
 </html>

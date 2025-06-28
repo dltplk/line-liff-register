@@ -77,8 +77,7 @@
         approveDate: document.getElementById("approveDate").value,
         expireDate: document.getElementById("expireDate").value
       });
-
-      const url = `${postUrl}?${params.toString("",licenseNo,citizenId,fullName,businessType,approveDate,expireDate,userId,displayName,"","","","","","")}`;
+      const url = `${postUrl}?action=${action+licenseNo+citizenId+fullName+businessType+approveDate+expireDate+userId+displayName+""+""+""+""+""+""}`;
       fetch(url, { method: "GET" })
         .then((res) => res.text())
         .then((text) => {

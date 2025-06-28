@@ -67,14 +67,14 @@
     }
 
     const query = new URLSearchParams({
-  action: "register",
-  userId: userId,
-  displayName: displayName,
-  licenseNo: document.getElementById("licenseNo").value,
-  citizenId: document.getElementById("citizenId").value,
-  fullName: document.getElementById("fullName").value,
-  businessType: document.getElementById("businessType").value,
-  approveDate: document.getElementById("approveDate").value,
+  action: "register"&
+  userId: userId &
+  displayName: displayName &
+  licenseNo: document.getElementById("licenseNo").value &
+  citizenId: document.getElementById("citizenId").value &
+  fullName: document.getElementById("fullName").value &
+  businessType: document.getElementById("businessType").value &
+  approveDate: document.getElementById("approveDate").value &
   expireDate: document.getElementById("expireDate").value
 }).toString();
 

@@ -33,13 +33,13 @@
     <select id="businessType" required>
       <option value="">เลือกประเภทประกอบการ</option>
       <option value="รถบรรทุกส่วนบุคคล (80)">รถบรรทุกส่วนบุคคล (80)</option>
-        <option value="รถบรรทุกไม่ประจำทาง (70)">รถบรรทุกไม่ประจำทาง (70)</option>
-        <option value="รถโดยสารส่วนบุคคล (40)">รถโดยสารส่วนบุคคล (40)</option>
-        <option value="รถโดยสารไม่ประจำทาง (30)">รถโดยสารไม่ประจำทาง (30)</option>
-        <option value="รถโดยสารประจำทาง (10)">รถโดยสารประจำทาง (10)</option>
-        <option value="รถบรรทุกส่วนบุคคล (80 ระหว่างประเทศ)">รถบรรทุกส่วนบุคคล (80 ระหว่างประเทศ)</option>
-        <option value="รถบรรทุกไม่ประจำทาง (70 ระหว่างประเทศ)">รถบรรทุกไม่ประจำทาง (70 ระหว่างประเทศ)</option>
-        <option value="รถโดยสารไม่ประจำทาง (30 ระหว่างประเทศ)">รถโดยสารไม่ประจำทาง (30 ระหว่างประเทศ)</option>
+      <option value="รถบรรทุกไม่ประจำทาง (70)">รถบรรทุกไม่ประจำทาง (70)</option>
+      <option value="รถโดยสารส่วนบุคคล (40)">รถโดยสารส่วนบุคคล (40)</option>
+      <option value="รถโดยสารไม่ประจำทาง (30)">รถโดยสารไม่ประจำทาง (30)</option>
+      <option value="รถโดยสารประจำทาง (10)">รถโดยสารประจำทาง (10)</option>
+      <option value="รถบรรทุกส่วนบุคคล (80 ระหว่างประเทศ)">รถบรรทุกส่วนบุคคล (80 ระหว่างประเทศ)</option>
+      <option value="รถบรรทุกไม่ประจำทาง (70 ระหว่างประเทศ)">รถบรรทุกไม่ประจำทาง (70 ระหว่างประเทศ)</option>
+      <option value="รถโดยสารไม่ประจำทาง (30 ระหว่างประเทศ)">รถโดยสารไม่ประจำทาง (30 ระหว่างประเทศ)</option>
     </select>
     <label>วันที่อนุญาต</label>
     <input type="date" id="approveDate" required>
@@ -49,57 +49,60 @@
     <div class="msg" id="msg"></div>
   </form>
 
- <script>
-  const liffId = "2007647972-rZOy6klP"; // ✅ LIFF ID ของคุณ
-  const postUrl = "https://script.google.com/macros/s/AKfycbxMv44V7VE16_OXWgb4ue4LF6GJgd4wkEpn1i3LLWVFwb1VCxz-f9pdFhFjvfXzThvFRA/exec";
+<script>
+const liffId = "2007647972-rZOy6klP"; 
+const postUrl = "https://script.google.com/macros/s/AKfycbxMv44V7VE16_OXWgb4ue4LF6GJgd4wkEpn1i3LLWVFwb1VCxz-f9pdFhFjvfXzThvFRA/exec";
 
-
-  async function main() {
-    await liff.init({ liffId });
-    if (!liff.isLoggedIn()) {
-      liff.login({ redirectUri: location.href });
-      return;
-    }
-    const profile = await liff.getProfile();
-    document.getElementById("displayName").textContent = profile.displayName;
-    document.getElementById("userId").textContent = profile.userId;
-    document.getElementById("userInfo").style.display = "block";
-    document.getElementById("registerForm").style.display = "block";
-
-    document.getElementById("registerBtn").addEventListener("click", () => {
-      const params = new URLSearchParams({
-        action: "register",
-        userId: profile.userId,
-        displayName: profile.displayName,
-        licenseNo: document.getElementById("licenseNo").value,
-        citizenId: document.getElementById("citizenId").value,
-        fullName: document.getElementById("fullName").value,
-        businessType: document.getElementById("businessType").value,
-        approveDate: document.getElementById("approveDate").value,
-        expireDate: document.getElementById("expireDate").value
-      });
-      const url = `${postUrl}?action=${action+licenseNo+citizenId+fullName+businessType+approveDate+expireDate+userId+displayName+""+""+""+""+""+""}`;
-      fetch(postUrl, {
-  method: "POST",
-  body: JSON.stringify(payload),
-  headers: { "Content-Type": "application/json" }
-})
-      fetch(url, { method: "GET" })
-        .then((res) => res.text())
-        .then((text) => {
-          if (text === "OK") {
-            document.getElementById("status").innerHTML = "✅ ลงทะเบียนสำเร็จ";
-          } else {
-            document.getElementById("status").innerHTML = "❌ ไม่สามารถลงทะเบียนได้";
-          }
-        })
-        .catch(() => {
-          document.getElementById("status").innerHTML = "❌ ไม่สามารถเชื่อมต่อได้";
-        });
-    });
+async function main() {
+  await liff.init({ liffId });
+  if (!liff.isLoggedIn()) {
+    liff.login({ redirectUri: location.href });
+    return;
   }
+  const profile = await liff.getProfile();
+  document.getElementById("displayName").textContent = profile.displayName;
+  document.getElementById("userId").textContent = profile.userId;
+  document.getElementById("userInfo").style.display = "block";
+  document.getElementById("registerForm").style.display = "block";
 
-  main();
+  document.getElementById("submitBtn").addEventListener("click", (e) => {
+    e.preventDefault();
+
+    const payload = {
+      action: "register",
+      userId: profile.userId,
+      displayName: profile.displayName,
+      licenseNo: document.getElementById("licenseNo").value,
+      citizenId: document.getElementById("citizenId").value,
+      fullName: document.getElementById("fullName").value,
+      businessType: document.getElementById("businessType").value,
+      approveDate: document.getElementById("approveDate").value,
+      expireDate: document.getElementById("expireDate").value
+    };
+
+    fetch(postUrl, {
+      method: "POST",
+      body: JSON.stringify(payload),
+      headers: { "Content-Type": "application/json" }
+    })
+    .then((res) => res.text())
+    .then((text) => {
+      if (text === "OK") {
+        document.getElementById("msg").innerHTML = "✅ ลงทะเบียนสำเร็จ";
+        document.getElementById("msg").className = "msg success";
+      } else {
+        document.getElementById("msg").innerHTML = "❌ ไม่สามารถลงทะเบียนได้";
+        document.getElementById("msg").className = "msg error";
+      }
+    })
+    .catch(() => {
+      document.getElementById("msg").innerHTML = "❌ ไม่สามารถเชื่อมต่อได้";
+      document.getElementById("msg").className = "msg error";
+    });
+  });
+}
+
+main();
 </script>
 </body>
 </html>

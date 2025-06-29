@@ -17,13 +17,13 @@
   </style>
 </head>
 <body>
-  <h2>ลงทะเบียนข้อมูลใบอนุญาต</h2>
+  <h2>ลงทะเบียนข้อมูลใบอนุญาตประกอบการ</h2>
   <div id="userInfo" style="display:none;">
     👤 <span id="displayName"></span><br>
     🆔 <span id="userId"></span>
   </div>
   <form id="registerForm" style="display:none;">
-    <label>เลขที่ใบอนุญาต</label>
+    <label>เลขที่ใบอนุญาต เช่น 1/25xxx</label>
     <input type="text" id="licenseNo" required>
     <label>เลขบัตรประชาชน/นิติบุคคล</label>
     <input type="text" id="citizenId" required>
@@ -68,7 +68,7 @@ async function main() {
   document.getElementById("submitBtn").addEventListener("click", (e) => {
     e.preventDefault();
 
-    const payload = {
+    const params = new URLSearchParams({
       action: "register",
       userId: profile.userId,
       displayName: profile.displayName,
@@ -78,12 +78,12 @@ async function main() {
       businessType: document.getElementById("businessType").value,
       approveDate: document.getElementById("approveDate").value,
       expireDate: document.getElementById("expireDate").value
-    };
+    });
 
-    fetch(postUrl, {
-      method: "POST",
-      body: JSON.stringify(payload),
-      headers: { "Content-Type": "application/json" }
+    const url = `${postUrl}?${params.toString()}`;
+
+    fetch(url, {
+      method: "GET",
     })
     .then((res) => res.text())
     .then((text) => {

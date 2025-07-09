@@ -65,44 +65,48 @@ async function main() {
   document.getElementById("userInfo").style.display = "block";
   document.getElementById("registerForm").style.display = "block";
 
-  document.getElementById("submitBtn").addEventListener("click", (e) => {
-    e.preventDefault();
+document.getElementById("submitBtn").addEventListener("click", (e) => {
+  e.preventDefault();
 
-    const params = new URLSearchParams({
-      action: "register",
-      userId: profile.userId,
-      displayName: profile.displayName,
-      licenseNo: document.getElementById("licenseNo").value,
-      citizenId: document.getElementById("citizenId").value,
-      fullName: document.getElementById("fullName").value,
-      businessType: document.getElementById("businessType").value,
-      approveDate: document.getElementById("approveDate").value,
-      expireDate: document.getElementById("expireDate").value
-    });
+  const citizenId = document.getElementById("citizenId").value;
 
-    const url = `${postUrl}?${params.toString()}`;
+  // ตรวจสอบเลขบัตร 13 หลัก
+  if (!/^\d{13}$/.test(citizenId)) {
+    document.getElementById("msg").innerHTML = "❌ กรุณากรอกเลขบัตรประชาชน/นิติบุคคลให้ครบ 13 หลัก";
+    document.getElementById("msg").className = "msg error";
+    return;
+  }
 
-    fetch(url, {
-      method: "GET",
-    })
-    .then((res) => res.text())
-    .then((text) => {
-      if (text === "OK") {
-        document.getElementById("msg").innerHTML = "✅ ลงทะเบียนสำเร็จ";
-        document.getElementById("msg").className = "msg success";
-      } else {
-        document.getElementById("msg").innerHTML = "❌ ไม่สามารถลงทะเบียนได้";
-        document.getElementById("msg").className = "msg error";
-      }
-    })
-    .catch(() => {
-      document.getElementById("msg").innerHTML = "✅ ลงทะเบียนสำเร็จ";
-      document.getElementById("msg").className = "msg error";
-    });
+  const params = new URLSearchParams({
+    action: "register",
+    userId: profile.userId,
+    displayName: profile.displayName,
+    licenseNo: document.getElementById("licenseNo").value,
+    citizenId: citizenId,
+    fullName: document.getElementById("fullName").value,
+    businessType: document.getElementById("businessType").value,
+    approveDate: document.getElementById("approveDate").value,
+    expireDate: document.getElementById("expireDate").value
   });
-}
 
-main();
-</script>
-</body>
-</html>
+  const url = `${postUrl}?${params.toString()}`;
+
+  fetch(url, {
+    method: "GET",
+  })
+  .then((res) => res.text())
+  .then((text) => {
+    if (text === "OK") {
+      document.getElementById("msg").innerHTML = "✅ ลงทะเบียนสำเร็จ";
+      document.getElementById("msg").className = "msg success";
+    } else {
+      document.getElementById("msg").innerHTML = "❌ ไม่สามารถลงทะเบียนได้";
+      document.getElementById("msg").className = "msg error";
+    }
+  })
+  .catch(() => {
+    document.getElementById("msg").innerHTML = "❌ ไม่สามารถลงทะเบียนได้";
+    document.getElementById("msg").className = "msg error";
+  });
+});
+

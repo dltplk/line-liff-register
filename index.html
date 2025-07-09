@@ -48,7 +48,6 @@
     <button type="submit" id="submitBtn">✅ ลงทะเบียน</button>
     <div class="msg" id="msg"></div>
   </form>
-
 <script>
 const liffId = "2007647972-rZOy6klP"; 
 const postUrl = "https://script.google.com/macros/s/AKfycbxMv44V7VE16_OXWgb4ue4LF6GJgd4wkEpn1i3LLWVFwb1VCxz-f9pdFhFjvfXzThvFRA/exec";
@@ -68,19 +67,28 @@ async function main() {
   document.getElementById("submitBtn").addEventListener("click", (e) => {
     e.preventDefault();
 
+    const citizenId = document.getElementById("citizenId").value;
+
+    // ตรวจสอบเลขบัตร 13 หลัก
+    if (!/^\d{13}$/.test(citizenId)) {
+      document.getElementById("msg").innerHTML = "❌ กรุณากรอกเลขบัตรประชาชน/นิติบุคคลให้ครบ 13 หลัก";
+      document.getElementById("msg").className = "msg error";
+      return;
+    }
+
     const params = new URLSearchParams({
       action: "register",
       userId: profile.userId,
       displayName: profile.displayName,
       licenseNo: document.getElementById("licenseNo").value,
-      citizenId: document.getElementById("citizenId").value,
+      citizenId: citizenId,
       fullName: document.getElementById("fullName").value,
       businessType: document.getElementById("businessType").value,
       approveDate: document.getElementById("approveDate").value,
       expireDate: document.getElementById("expireDate").value
     });
 
-    const url = ${postUrl}?${params.toString()};
+    const url = `${postUrl}?${params.toString()}`;
 
     fetch(url, {
       method: "GET",
@@ -96,13 +104,16 @@ async function main() {
       }
     })
     .catch(() => {
-      document.getElementById("msg").innerHTML = "✅ ลงทะเบียนสำเร็จ";
+      document.getElementById("msg").innerHTML = "❌ ไม่สามารถลงทะเบียนได้";
       document.getElementById("msg").className = "msg error";
     });
   });
 }
 
+// ✅ เรียก main() ข้างนอก
 main();
 </script>
+
+
 </body>
 </html>

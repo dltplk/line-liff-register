@@ -88,7 +88,11 @@
       document.getElementById("msg").className = "msg error";
       return;
     }
+       
       const licenseNo = document.getElementById("licenseNo").value;
+       const citizenId = document.getElementById("citizenId").value;
+       const fullName = document.getElementById("fullName").value;
+      const businessType = document.getElementById("businessType").value;
       const approveDate = document.getElementById("approveDate").value;
       const expireDate = document.getElementById("expireDate").value;
       const userId = document.getElementById("userId").textContent;
@@ -99,7 +103,7 @@
         return;
       }
 
-      const query = `?action=update&licenseNo=${encodeURIComponent(licenseNo)}&approveDate=${encodeURIComponent(approveDate)}&expireDate=${encodeURIComponent(expireDate)}&userId=${encodeURIComponent(userId)}`;
+      const query = `?action=update&licenseNo=${encodeURIComponent(licenseNo)}&citizenId=${encodeURIComponent(citizenId)}&fullName=${encodeURIComponent(fullName)}&businessType=${encodeURIComponent(businessType)}&approveDate=${encodeURIComponent(approveDate)}&expireDate=${encodeURIComponent(expireDate)}&userId=${encodeURIComponent(userId)}`;
 
       try {
         const res = await fetch(postUrl + query, { method: "GET" });

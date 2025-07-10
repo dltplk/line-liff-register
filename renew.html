@@ -50,25 +50,27 @@
       document.getElementById("renewForm").style.display = "block";
     }
 
-    document.getElementById("renewForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const payload = {
-        action: "update",
-        licenseNo: document.getElementById("licenseNo").value,
-        approveDate: document.getElementById("approveDate").value,
-        expireDate: document.getElementById("expireDate").value,
-        userId: document.getElementById("userId").textContent
-      };
-      try {
-        const res = await fetch(postUrl, { method: "GET", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
-        const text = await res.text();
-        document.getElementById("msg").textContent = text.includes("OK") ? "✅ อัปเดตสำเร็จ" : "❌ เกิดข้อผิดพลาด: " + text;
-        document.getElementById("msg").className = text.includes("OK") ? "msg success" : "msg error";
-      } catch {
-        document.getElementById("msg").textContent = "❌ ไม่สามารถเชื่อมต่อได้";
-        document.getElementById("msg").className = "msg error";
-      }
-    });
+   document.getElementById("renewForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const licenseNo = document.getElementById("licenseNo").value;
+  const approveDate = document.getElementById("approveDate").value;
+  const expireDate = document.getElementById("expireDate").value;
+  const userId = document.getElementById("userId").textContent;
+
+  // สร้าง query string
+  const query = `?action=update&licenseNo=${encodeURIComponent(licenseNo)}&approveDate=${encodeURIComponent(approveDate)}&expireDate=${encodeURIComponent(expireDate)}&userId=${encodeURIComponent(userId)}`;
+
+  try {
+    const res = await fetch(postUrl + query, { method: "GET" });
+    const text = await res.text();
+    document.getElementById("msg").textContent = text.includes("OK") ? "✅ อัปเดตสำเร็จ" : "❌ เกิดข้อผิดพลาด: " + text;
+    document.getElementById("msg").className = text.includes("OK") ? "msg success" : "msg error";
+  } catch {
+    document.getElementById("msg").textContent = "❌ ไม่สามารถเชื่อมต่อได้";
+    document.getElementById("msg").className = "msg error";
+  }
+});
+
 
     main();
   </script>

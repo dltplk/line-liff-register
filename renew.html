@@ -33,63 +33,61 @@
     <div class="msg" id="msg"></div>
   </form>
 
- <script>
-const liffId = "2007647972-rZOy6klP"; // ✅ LIFF ID สำหรับแจ้งเตือนต่ออายุ
-const postUrl = "https://script.google.com/macros/s/AKfycbxMv44V7VE16_OXWgb4ue4LF6GJgd4wkEpn1i3LLWVFwb1VCxz-f9pdFhFjvfXzThvFRA/exec";
+  <script>
+    const liffId = "2007647972-rZOy6klP"; // ✅ LIFF ID
+    const postUrl = "https://script.google.com/macros/s/AKfycbxMv44V7VE16_OXWgb4ue4LF6GJgd4wkEpn1i3LLWVFwb1VCxz-f9pdFhFjvfXzThvFRA/exec";
 
-async function main() {
-  try {
-    await liff.init({ liffId });
-    if (!liff.isLoggedIn()) {
-      liff.login({ redirectUri: location.href });
-      return;
+    async function main() {
+      try {
+        await liff.init({ liffId });
+        if (!liff.isLoggedIn()) {
+          liff.login({ redirectUri: location.href });
+          return;
+        }
+
+        const profile = await liff.getProfile();
+        console.log("Profile:", profile);
+
+        document.getElementById("displayName").textContent = profile.displayName;
+        document.getElementById("userId").textContent = profile.userId;
+
+        // ✅ สั่งให้โชว์ form และ user info หลัง profile สำเร็จ
+        document.getElementById("userInfo").style.display = "block";
+        document.getElementById("renewForm").style.display = "block";
+
+      } catch (error) {
+        console.error("LIFF error:", error);
+        document.getElementById("msg").textContent = "❌ ไม่สามารถโหลดข้อมูลผู้ใช้ได้ กรุณาลองใหม่";
+        document.getElementById("msg").className = "msg error";
+      }
     }
 
-    const profile = await liff.getProfile();
-    console.log("Profile loaded", profile);
+    document.getElementById("renewForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      
+      const licenseNo = document.getElementById("licenseNo").value;
+      const approveDate = document.getElementById("approveDate").value;
+      const expireDate = document.getElementById("expireDate").value;
+      const userId = document.getElementById("userId").textContent;
 
-    document.getElementById("displayName").textContent = profile.displayName;
-    document.getElementById("userId").textContent = profile.userId;
+      if (!userId) {
+        document.getElementById("msg").textContent = "❌ ไม่พบ User ID กรุณาล็อกอินใหม่";
+        document.getElementById("msg").className = "msg error";
+        return;
+      }
 
-    document.getElementById("userInfo").style.display = "block";
-    document.getElementById("renewForm").style.display = "block";
+      const query = `?action=update&licenseNo=${encodeURIComponent(licenseNo)}&approveDate=${encodeURIComponent(approveDate)}&expireDate=${encodeURIComponent(expireDate)}&userId=${encodeURIComponent(userId)}`;
 
-  } catch (error) {
-    console.error("LIFF init error", error);
-    document.getElementById("msg").textContent = "❌ ไม่สามารถโหลดข้อมูลผู้ใช้ได้ กรุณาลองใหม่";
-    document.getElementById("msg").className = "msg error";
-  }
-}
-
-document.getElementById("renewForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  
-  const licenseNo = document.getElementById("licenseNo").value;
-  const approveDate = document.getElementById("approveDate").value;
-  const expireDate = document.getElementById("expireDate").value;
-  const userId = document.getElementById("userId").textContent;
-
-  if (!userId) {
-    document.getElementById("msg").textContent = "❌ ไม่พบ User ID กรุณาล็อกอินใหม่";
-    document.getElementById("msg").className = "msg error";
-    return;
-  }
-
-  const query = `?action=update&licenseNo=${encodeURIComponent(licenseNo)}&approveDate=${encodeURIComponent(approveDate)}&expireDate=${encodeURIComponent(expireDate)}&userId=${encodeURIComponent(userId)}`;
-
-  try {
-    const res = await fetch(postUrl + query, { method: "GET" });
-    const text = await res.text();
-    document.getElementById("msg").textContent = text.includes("OK") ? "✅ อัปเดตสำเร็จ" : "❌ เกิดข้อผิดพลาด: " + text;
-    document.getElementById("msg").className = text.includes("OK") ? "msg success" : "msg error";
-  } catch {
-    document.getElementById("msg").textContent = "❌ ไม่สามารถเชื่อมต่อได้";
-    document.getElementById("msg").className = "msg error";
-  }
-});
-
-main();
-</script>
+      try {
+        const res = await fetch(postUrl + query, { method: "GET" });
+        const text = await res.text();
+        document.getElementById("msg").textContent = text.includes("OK") ? "✅ อัปเดตสำเร็จ" : "❌ เกิดข้อผิดพลาด: " + text;
+        document.getElementById("msg").className = text.includes("OK") ? "msg success" : "msg error";
+      } catch {
+        document.getElementById("msg").textContent = "❌ ไม่สามารถเชื่อมต่อได้";
+        document.getElementById("msg").className = "msg error";
+      }
+    });
 
     main();
   </script>

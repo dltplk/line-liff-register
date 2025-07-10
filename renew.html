@@ -50,14 +50,21 @@
       document.getElementById("renewForm").style.display = "block";
     }
 
-   document.getElementById("renewForm").addEventListener("submit", async (e) => {
+  document.getElementById("renewForm").addEventListener("submit", async (e) => {
   e.preventDefault();
+  
   const licenseNo = document.getElementById("licenseNo").value;
   const approveDate = document.getElementById("approveDate").value;
   const expireDate = document.getElementById("expireDate").value;
   const userId = document.getElementById("userId").textContent;
 
-  // สร้าง query string
+  // เช็ก userId ก่อน
+  if (!userId) {
+    document.getElementById("msg").textContent = "❌ ไม่พบ User ID กรุณาล็อกอินใหม่";
+    document.getElementById("msg").className = "msg error";
+    return;
+  }
+
   const query = `?action=update&licenseNo=${encodeURIComponent(licenseNo)}&approveDate=${encodeURIComponent(approveDate)}&expireDate=${encodeURIComponent(expireDate)}&userId=${encodeURIComponent(userId)}`;
 
   try {
@@ -70,6 +77,7 @@
     document.getElementById("msg").className = "msg error";
   }
 });
+
 
 
     main();

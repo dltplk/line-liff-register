@@ -80,7 +80,14 @@
 
     document.getElementById("renewForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-      
+       const citizenId = document.getElementById("citizenId").value;
+
+    // ตรวจสอบเลขบัตร 13 หลัก
+    if (!/^\d{13}$/.test(citizenId)) {
+      document.getElementById("msg").innerHTML = "❌ กรุณากรอกเลขบัตรประชาชน/นิติบุคคลให้ครบ 13 หลัก";
+      document.getElementById("msg").className = "msg error";
+      return;
+    }
       const licenseNo = document.getElementById("licenseNo").value;
       const approveDate = document.getElementById("approveDate").value;
       const expireDate = document.getElementById("expireDate").value;

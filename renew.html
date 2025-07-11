@@ -25,22 +25,8 @@
   <form id="renewForm" style="display:none;">
    <label>เลขที่ใบอนุญาต เช่น 1/25xx</label>
     <input type="text" id="licenseNo" required>
-    <label>เลขบัตรประชาชน/นิติบุคคล</label>
-    <input type="text" id="citizenId" required>
     <label>ชื่อ-สกุล/ชื่อกิจการ</label>
     <input type="text" id="fullName" required>
-    <label>ประเภทประกอบการ</label>
-    <select id="businessType" required>
-      <option value="">เลือกประเภทประกอบการ</option>
-      <option value="รถบรรทุกส่วนบุคคล (80)">รถบรรทุกส่วนบุคคล (80)</option>
-      <option value="รถบรรทุกไม่ประจำทาง (70)">รถบรรทุกไม่ประจำทาง (70)</option>
-      <option value="รถโดยสารส่วนบุคคล (40)">รถโดยสารส่วนบุคคล (40)</option>
-      <option value="รถโดยสารไม่ประจำทาง (30)">รถโดยสารไม่ประจำทาง (30)</option>
-      <option value="รถโดยสารประจำทาง (10)">รถโดยสารประจำทาง (10)</option>
-      <option value="รถบรรทุกส่วนบุคคล (80 ระหว่างประเทศ)">รถบรรทุกส่วนบุคคล (80 ระหว่างประเทศ)</option>
-      <option value="รถบรรทุกไม่ประจำทาง (70 ระหว่างประเทศ)">รถบรรทุกไม่ประจำทาง (70 ระหว่างประเทศ)</option>
-      <option value="รถโดยสารไม่ประจำทาง (30 ระหว่างประเทศ)">รถโดยสารไม่ประจำทาง (30 ระหว่างประเทศ)</option>
-    </select>
     <label>วันที่อนุญาต</label>
     <input type="date" id="approveDate" required>
     <label>วันหมดอายุ</label>
@@ -50,73 +36,93 @@
   </form>
 
   <script>
-    const liffId = "2007647972-3ZPYrdwA"; // ✅ LIFF ID
-    const postUrl = "https://script.google.com/macros/s/AKfycbxMv44V7VE16_OXWgb4ue4LF6GJgd4wkEpn1i3LLWVFwb1VCxz-f9pdFhFjvfXzThvFRA/exec";
+  const liffId = "2007647972-3ZPYrdwA";
+  const postUrl = "https://script.google.com/macros/s/AKfycbxMv44V7VE16_OXWgb4ue4LF6GJgd4wkEpn1i3LLWVFwb1VCxz-f9pdFhFjvfXzThvFRA/exec";
 
-    async function main() {
-      try {
-        await liff.init({ liffId });
-        if (!liff.isLoggedIn()) {
-          liff.login({ redirectUri: location.href });
-          return;
-        }
-
-        const profile = await liff.getProfile();
-        console.log("Profile:", profile);
-
-        document.getElementById("displayName").textContent = profile.displayName;
-        document.getElementById("userId").textContent = profile.userId;
-
-        // ✅ สั่งให้โชว์ form และ user info หลัง profile สำเร็จ
-        document.getElementById("userInfo").style.display = "block";
-        document.getElementById("renewForm").style.display = "block";
-
-      } catch (error) {
-        console.error("LIFF error:", error);
-        document.getElementById("msg").textContent = "❌ ไม่สามารถโหลดข้อมูลผู้ใช้ได้ กรุณาลองใหม่";
-        document.getElementById("msg").className = "msg error";
-      }
-    }
-
-    document.getElementById("renewForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-       const citizenId = document.getElementById("citizenId").value;
-
-    // ตรวจสอบเลขบัตร 13 หลัก
-    if (!/^\d{13}$/.test(citizenId)) {
-      document.getElementById("msg").innerHTML = "❌ กรุณากรอกเลขบัตรประชาชน/นิติบุคคลให้ครบ 13 หลัก";
-      document.getElementById("msg").className = "msg error";
-      return;
-    }
-       
-      const licenseNo = document.getElementById("licenseNo").value;
-       const citizenId = document.getElementById("citizenId").value;
-       const fullName = document.getElementById("fullName").value;
-      const businessType = document.getElementById("businessType").value;
-      const approveDate = document.getElementById("approveDate").value;
-      const expireDate = document.getElementById("expireDate").value;
-      const userId = document.getElementById("userId").textContent;
-
-      if (!userId) {
-        document.getElementById("msg").textContent = "❌ ไม่พบ User ID กรุณาล็อกอินใหม่";
-        document.getElementById("msg").className = "msg error";
+  async function main() {
+    try {
+      await liff.init({ liffId });
+      if (!liff.isLoggedIn()) {
+        liff.login({ redirectUri: location.href });
         return;
       }
 
-      const query = `?action=update&licenseNo=${encodeURIComponent(licenseNo)}&citizenId=${encodeURIComponent(citizenId)}&fullName=${encodeURIComponent(fullName)}&businessType=${encodeURIComponent(businessType)}&approveDate=${encodeURIComponent(approveDate)}&expireDate=${encodeURIComponent(expireDate)}&userId=${encodeURIComponent(userId)}`;
+      const profile = await liff.getProfile();
+      document.getElementById("displayName").textContent = profile.displayName;
+      document.getElementById("userId").textContent = profile.userId;
 
-      try {
-        const res = await fetch(postUrl + query, { method: "GET" });
-        const text = await res.text();
-        document.getElementById("msg").textContent = text.includes("OK") ? "✅ อัปเดตสำเร็จ" : "❌ เกิดข้อผิดพลาด: " + text;
-        document.getElementById("msg").className = text.includes("OK") ? "msg success" : "msg error";
-      } catch {
-        document.getElementById("msg").textContent = "❌ ไม่สามารถเชื่อมต่อได้";
-        document.getElementById("msg").className = "msg error";
-      }
-    });
+      // ✅ ดึงค่าจาก URL ที่ถูกส่งมาจาก Script
+      const urlParams = new URLSearchParams(window.location.search);
+      const licenseNo = urlParams.get("licenseNo") || "";
+      const fullName = urlParams.get("fullName") || "";
+      const approveDate = urlParams.get("approveDate") || "";
+      const expireDate1 = urlParams.get("expireDate1") || "";
 
-    main();
-  </script>
+      // ✅ เติมค่าลงใน input
+      document.getElementById("licenseNo").value = licenseNo;
+      document.getElementById("fullName").value = fullName;
+      document.getElementById("approveDate").value = formatDateForInput(approveDate);
+      document.getElementById("expireDate").value = formatDateForInput(expireDate1);
+
+      document.getElementById("userInfo").style.display = "block";
+      document.getElementById("renewForm").style.display = "block";
+    } catch (error) {
+      console.error("LIFF error:", error);
+      document.getElementById("msg").textContent = "❌ ไม่สามารถโหลดข้อมูลผู้ใช้ได้ กรุณาลองใหม่";
+      document.getElementById("msg").className = "msg error";
+    }
+  }
+
+  function formatDateForInput(dateStr) {
+    // แปลงวันที่ไทยแบบ "16 ส.ค. 2568" → "2025-08-16"
+    const months = {
+      'ม.ค.': '01', 'ก.พ.': '02', 'มี.ค.': '03', 'เม.ย.': '04',
+      'พ.ค.': '05', 'มิ.ย.': '06', 'ก.ค.': '07', 'ส.ค.': '08',
+      'ก.ย.': '09', 'ต.ค.': '10', 'พ.ย.': '11', 'ธ.ค.': '12'
+    };
+
+    if (!dateStr || dateStr.includes("-")) return dateStr; // ถ้าเป็นฟอร์แมต yyyy-mm-dd อยู่แล้ว
+
+    try {
+      const [day, mon, year] = dateStr.split(" ");
+      const month = months[mon];
+      const y = (parseInt(year) - 543).toString();
+      return `${y}-${month}-${day.padStart(2, '0')}`;
+    } catch {
+      return "";
+    }
+  }
+
+  document.getElementById("renewForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const licenseNo = document.getElementById("licenseNo").value;
+    const fullName = document.getElementById("fullName").value;
+    const approveDate = document.getElementById("approveDate").value;
+    const expireDate = document.getElementById("expireDate").value;
+    const userId = document.getElementById("userId").textContent;
+
+    if (!userId) {
+      document.getElementById("msg").textContent = "❌ ไม่พบ User ID กรุณาล็อกอินใหม่";
+      document.getElementById("msg").className = "msg error";
+      return;
+    }
+
+    const query = `?action=update&licenseNo=${encodeURIComponent(licenseNo)}&fullName=${encodeURIComponent(fullName)}&approveDate=${encodeURIComponent(approveDate)}&expireDate=${encodeURIComponent(expireDate)}&userId=${encodeURIComponent(userId)}`;
+
+    try {
+      const res = await fetch(postUrl + query, { method: "GET" });
+      const text = await res.text();
+      document.getElementById("msg").textContent = text.includes("OK") ? "✅ อัปเดตสำเร็จ" : "❌ เกิดข้อผิดพลาด: " + text;
+      document.getElementById("msg").className = text.includes("OK") ? "msg success" : "msg error";
+    } catch {
+      document.getElementById("msg").textContent = "❌ ไม่สามารถเชื่อมต่อได้";
+      document.getElementById("msg").className = "msg error";
+    }
+  });
+
+  main();
+</script>
+
 </body>
 </html>

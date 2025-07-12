@@ -40,73 +40,49 @@
     <div class="msg" id="msg"></div>
   </form>
 
-  <script>
-    const postUrl = "https://script.google.com/macros/s/AKfycbxMv44V7VE16_OXWgb4ue4LF6GJgd4wkEpn1i3LLWVFwb1VCxz-f9pdFhFjvfXzThvFRA/exec";
+ <script>
+  const postUrl = "https://script.google.com/macros/s/AKfycbxMv44V7VE16_OXWgb4ue4LF6GJgd4wkEpn1i3LLWVFwb1VCxz-f9pdFhFjvfXzThvFRA/exec";
 
-    // ดึงค่าจาก URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const licenseNo = urlParams.get("licenseNo") || "";
-    const fullName = urlParams.get("fullName") || "";
-    const approveDate = urlParams.get("approveDate") || "";
-    const expireDate1 = urlParams.get("expireDate1") || "";
-    const userId = urlParams.get("userId") || "";
+  // ดึงค่าจาก URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const fullName = urlParams.get("fullName") || "";
+  const userId = urlParams.get("userId") || "";
 
-    // ใส่ค่าลงฟอร์ม
-    document.getElementById("licenseNo").value = licenseNo;
-    document.getElementById("fullName").value = fullName;
-    document.getElementById("approveDate").value = formatDateForInput(approveDate);
-    document.getElementById("expireDate").value = formatDateForInput(expireDate1);
+  // ใส่ค่าเฉพาะชื่อ
+  document.getElementById("fullName").value = fullName;
 
-    if (userId) {
-      document.getElementById("userId").textContent = userId;
-      document.getElementById("userInfo").style.display = "block";
+  if (userId) {
+    document.getElementById("userId").textContent = userId;
+    document.getElementById("userInfo").style.display = "block";
+  }
+
+  document.getElementById("renewForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const licenseNo = document.getElementById("licenseNo").value;
+    const fullName = document.getElementById("fullName").value;
+    const approveDate = document.getElementById("approveDate").value;
+    const expireDate = document.getElementById("expireDate").value;
+
+    if (!userId) {
+      document.getElementById("msg").textContent = "❌ ไม่พบข้อมูลผู้ใช้ (userId)";
+      document.getElementById("msg").className = "msg error";
+      return;
     }
 
-    document.getElementById("renewForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
+    const query = `?action=update&licenseNo=${encodeURIComponent(licenseNo)}&fullName=${encodeURIComponent(fullName)}&approveDate=${encodeURIComponent(approveDate)}&expireDate=${encodeURIComponent(expireDate)}&userId=${encodeURIComponent(userId)}`;
 
-      const licenseNo = document.getElementById("licenseNo").value;
-      const fullName = document.getElementById("fullName").value;
-      const approveDate = document.getElementById("approveDate").value;
-      const expireDate = document.getElementById("expireDate").value;
-
-      if (!userId) {
-        document.getElementById("msg").textContent = "❌ ไม่พบข้อมูลผู้ใช้ (userId)";
-        document.getElementById("msg").className = "msg error";
-        return;
-      }
-
-      const query = `?action=update&licenseNo=${encodeURIComponent(licenseNo)}&fullName=${encodeURIComponent(fullName)}&approveDate=${encodeURIComponent(approveDate)}&expireDate=${encodeURIComponent(expireDate)}&userId=${encodeURIComponent(userId)}`;
-
-      try {
-        const res = await fetch(postUrl + query);
-        const text = await res.text();
-        document.getElementById("msg").textContent = text.includes("OK") ? "✅ อัปเดตสำเร็จ" : "❌ เกิดข้อผิดพลาด: " + text;
-        document.getElementById("msg").className = text.includes("OK") ? "msg success" : "msg error";
-      } catch {
-        document.getElementById("msg").textContent = "❌ ไม่สามารถเชื่อมต่อได้";
-        document.getElementById("msg").className = "msg error";
-      }
-    });
-
-    function formatDateForInput(dateStr) {
-      const months = {
-        'ม.ค.': '01', 'ก.พ.': '02', 'มี.ค.': '03', 'เม.ย.': '04',
-        'พ.ค.': '05', 'มิ.ย.': '06', 'ก.ค.': '07', 'ส.ค.': '08',
-        'ก.ย.': '09', 'ต.ค.': '10', 'พ.ย.': '11', 'ธ.ค.': '12'
-      };
-
-      if (!dateStr || dateStr.includes("-")) return dateStr;
-
-      try {
-        const [day, mon, year] = dateStr.split(" ");
-        const month = months[mon];
-        const y = (parseInt(year) - 543).toString();
-        return `${y}-${month}-${day.padStart(2, '0')}`;
-      } catch {
-        return "";
-      }
+    try {
+      const res = await fetch(postUrl + query);
+      const text = await res.text();
+      document.getElementById("msg").textContent = text.includes("OK") ? "✅ อัปเดตสำเร็จ" : "❌ เกิดข้อผิดพลาด: " + text;
+      document.getElementById("msg").className = text.includes("OK") ? "msg success" : "msg error";
+    } catch {
+      document.getElementById("msg").textContent = "❌ ไม่สามารถเชื่อมต่อได้";
+      document.getElementById("msg").className = "msg error";
     }
-  </script>
+  });
+</script>
+
 </body>
 </html>

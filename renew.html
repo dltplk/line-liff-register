@@ -40,16 +40,28 @@
     <div class="msg" id="msg"></div>
   </form>
 
- <script>
+<script>
   const postUrl = "https://script.google.com/macros/s/AKfycbxMv44V7VE16_OXWgb4ue4LF6GJgd4wkEpn1i3LLWVFwb1VCxz-f9pdFhFjvfXzThvFRA/exec";
 
   // ดึงค่าจาก URL
   const urlParams = new URLSearchParams(window.location.search);
-  const fullName = urlParams.get("fullName") || "";
-  const userId = urlParams.get("userId") || "";
+  let fullName = "";
+  let userId = "";
+
+  // ถ้ามี liff.state
+  const state = urlParams.get("liff.state");
+  if (state) {
+    const innerParams = new URLSearchParams(state);
+    fullName = innerParams.get("fullName") || "";
+    userId = innerParams.get("userId") || "";
+  } else {
+    // ถ้าไม่มี liff.state ให้ใช้ query ปกติ
+    fullName = urlParams.get("fullName") || "";
+    userId = urlParams.get("userId") || "";
+  }
 
   // ใส่ค่าเฉพาะชื่อ
-  document.getElementById("fullName").value = fullName;
+  document.getElementById("fullName").value = decodeURIComponent(fullName);
 
   if (userId) {
     document.getElementById("userId").textContent = userId;
@@ -60,7 +72,7 @@
     e.preventDefault();
 
     const licenseNo = document.getElementById("licenseNo").value;
-    const fullName = document.getElementById("fullName").value;
+    const fullNameInput = document.getElementById("fullName").value;
     const approveDate = document.getElementById("approveDate").value;
     const expireDate = document.getElementById("expireDate").value;
 
@@ -70,7 +82,7 @@
       return;
     }
 
-    const query = `?action=update&licenseNo=${encodeURIComponent(licenseNo)}&fullName=${encodeURIComponent(fullName)}&approveDate=${encodeURIComponent(approveDate)}&expireDate=${encodeURIComponent(expireDate)}&userId=${encodeURIComponent(userId)}`;
+    const query = `?action=update&licenseNo=${encodeURIComponent(licenseNo)}&fullName=${encodeURIComponent(fullNameInput)}&approveDate=${encodeURIComponent(approveDate)}&expireDate=${encodeURIComponent(expireDate)}&userId=${encodeURIComponent(userId)}`;
 
     try {
       const res = await fetch(postUrl + query);
@@ -83,6 +95,7 @@
     }
   });
 </script>
+
 
 </body>
 </html>

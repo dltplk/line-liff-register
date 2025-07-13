@@ -81,7 +81,7 @@ async function main() {
       action: "register",
       userId: profile.userId,
       displayName: profile.displayName,
-      licenseNo: document.getElementById("licenseNo").value,
+      licenseNo: "'" + document.getElementById("licenseNo").value,
       citizenId: "'" + citizenId,
       fullName: document.getElementById("fullName").value,
       businessType: document.getElementById("businessType").value,

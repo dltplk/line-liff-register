@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
-  <title>ยืนยันการต่ออายใบอนุญาตประกอบการ</title>
+  <title>ยืนยันการต่ออายุใบอนุญาตประกอบการขนส่ง</title>
   <style>
     body { font-family: 'Tahoma', sans-serif; max-width: 480px; margin: auto; padding: 20px; background: #f4f7f8; border-radius: 10px; box-shadow: 0 0 10px #ccc; }
     h2 { text-align: center; color: #0066cc; }
@@ -17,7 +17,7 @@
   </style>
 </head>
 <body>
-  <h2>อัพเดทข้อมูลใบอนุญาตประกอบการใหม่ เพื่อแจ้งเตือนในรอบถัดไป</h2>
+  <h2>อัปเดตข้อมูลใบอนุญาตประกอบการขนส่ง</h2>
 
   <div id="userInfo" style="display:none;">
     🆔 ผู้ใช้: <span id="userId"></span>
@@ -43,36 +43,38 @@
 <script>
   const postUrl = "https://script.google.com/macros/s/AKfycbxMv44V7VE16_OXWgb4ue4LF6GJgd4wkEpn1i3LLWVFwb1VCxz-f9pdFhFjvfXzThvFRA/exec";
 
-  // ดึงค่าจาก URL
   const urlParams = new URLSearchParams(window.location.search);
-  let fullName = "";
-  let userId = "";
-
-  // ถ้ามี liff.state
-  const state = urlParams.get("liff.state");
-  if (state) {
-    const innerParams = new URLSearchParams(state);
-    fullName = innerParams.get("fullName") || "";
-    userId = innerParams.get("userId") || "";
-  } else {
-    // ถ้าไม่มี liff.state ให้ใช้ query ปกติ
-    fullName = urlParams.get("fullName") || "";
-    userId = urlParams.get("userId") || "";
-  }
-
-  // ใส่ค่าเฉพาะชื่อ
-  document.getElementById("fullName").value = decodeURIComponent(fullName);
+  const userId = urlParams.get("userId");
 
   if (userId) {
     document.getElementById("userId").textContent = userId;
     document.getElementById("userInfo").style.display = "block";
+
+    // 🔥 เรียก API ไป fetch ข้อมูล
+    fetch(`${postUrl}?action=fetch&userId=${encodeURIComponent(userId)}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status === "found") {
+          document.getElementById("licenseNo").value = data.licenseNo || "";
+          document.getElementById("fullName").value = data.fullName || "";
+          document.getElementById("approveDate").value = data.approveDate || "";
+          document.getElementById("expireDate").value = data.expireDate || "";
+        } else {
+          document.getElementById("msg").textContent = "❌ ไม่พบข้อมูลผู้ใช้";
+          document.getElementById("msg").className = "msg error";
+        }
+      })
+      .catch(() => {
+        document.getElementById("msg").textContent = "❌ โหลดข้อมูลไม่สำเร็จ";
+        document.getElementById("msg").className = "msg error";
+      });
   }
 
   document.getElementById("renewForm").addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const licenseNo = document.getElementById("licenseNo").value;
-    const fullNameInput = document.getElementById("fullName").value;
+    const fullName = document.getElementById("fullName").value;
     const approveDate = document.getElementById("approveDate").value;
     const expireDate = document.getElementById("expireDate").value;
 
@@ -82,7 +84,7 @@
       return;
     }
 
-    const query = `?action=update&licenseNo=${encodeURIComponent(licenseNo)}&fullName=${encodeURIComponent(fullNameInput)}&approveDate=${encodeURIComponent(approveDate)}&expireDate=${encodeURIComponent(expireDate)}&userId=${encodeURIComponent(userId)}`;
+    const query = `?action=update&licenseNo=${encodeURIComponent(licenseNo)}&fullName=${encodeURIComponent(fullName)}&approveDate=${encodeURIComponent(approveDate)}&expireDate=${encodeURIComponent(expireDate)}&userId=${encodeURIComponent(userId)}`;
 
     try {
       const res = await fetch(postUrl + query);
@@ -95,7 +97,5 @@
     }
   });
 </script>
-
-
 </body>
 </html>

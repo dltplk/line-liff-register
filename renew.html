@@ -59,31 +59,38 @@
   </form>
 
 <script>
-  const postUrl = "https://script.google.com/macros/s/AKfycbxMv44V7VE16_OXWgb4ue4LF6GJgd4wkEpn1i3LLWVFwb1VCxz-f9pdFhFjvfXzThvFRA/exec";
-  const urlParams = new URLSearchParams(window.location.search);
-  const userId = urlParams.get("userId");
+ const postUrl = "https://script.google.com/macros/s/AKfycbxMv44V7VE16_OXWgb4ue4LF6GJgd4wkEpn1i3LLWVFwb1VCxz-f9pdFhFjvfXzThvFRA/exec";
 
-  if (userId) {
-    document.getElementById("userId").textContent = userId;
-    document.getElementById("userInfo").style.display = "block";
+const urlParams = new URLSearchParams(window.location.search);
+let userId = urlParams.get("userId");
 
-    // 🔥 เรียก API ไป fetch ชื่อผู้ประกอบการ
-    fetch(`${postUrl}?action=fetch&userId=${encodeURIComponent(userId)}`)
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("Fetch data:", data);
-        if (data.status === "found") {
-          document.getElementById("fullName").value = data.fullName || "";
-        } else {
-          document.getElementById("msg").textContent = "❌ ไม่พบข้อมูลผู้ใช้";
-          document.getElementById("msg").className = "msg error";
-        }
-      })
-      .catch(() => {
-        document.getElementById("msg").textContent = "❌ โหลดข้อมูลไม่สำเร็จ";
+// ถ้าไม่เจอ userId ให้แกะจาก liff.state
+if (!userId && urlParams.get("liff.state")) {
+  const stateParams = new URLSearchParams(urlParams.get("liff.state"));
+  userId = stateParams.get("userId");
+}
+
+if (userId) {
+  document.getElementById("userId").textContent = userId;
+  document.getElementById("userInfo").style.display = "block";
+
+  fetch(`${postUrl}?action=fetch&userId=${encodeURIComponent(userId)}`)
+    .then((res) => res.json())
+    .then((data) => {
+      console.log("Fetch data:", data);
+      if (data.status === "found") {
+        document.getElementById("fullName").value = data.fullName || "";
+      } else {
+        document.getElementById("msg").textContent = "❌ ไม่พบข้อมูลผู้ใช้";
         document.getElementById("msg").className = "msg error";
-      });
-  }
+      }
+    })
+    .catch(() => {
+      document.getElementById("msg").textContent = "❌ โหลดข้อมูลไม่สำเร็จ";
+      document.getElementById("msg").className = "msg error";
+    });
+}
+
 
   document.getElementById("renewForm").addEventListener("submit", async (e) => {
     e.preventDefault();

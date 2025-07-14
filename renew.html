@@ -2,58 +2,38 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
-  <title>ยืนยันการต่ออายุใบอนุญาตประกอบการขนส่ง</title>
+  <title>ยืนยันการต่ออายุใบอนุญาตประกอบการฯ</title>
   <style>
-    body {
-      font-family: 'Tahoma', sans-serif;
-      max-width: 480px;
-      margin: auto;
-      padding: 20px;
-      background: #f4f7f8;
-      border-radius: 10px;
-      box-shadow: 0 0 10px #ccc;
-    }
+    body { font-family: Tahoma, sans-serif; max-width: 480px; margin: auto; padding: 20px; background: #f4f7f8; border-radius: 10px; box-shadow: 0 0 10px #ccc; }
     h2 { text-align: center; color: #0066cc; }
     label { display: block; margin: 10px 0 5px; font-weight: bold; }
     input { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; }
-    button {
-      margin-top: 20px;
-      padding: 10px;
-      width: 100%;
-      font-size: 16px;
-      border: none;
-      border-radius: 8px;
-      background-color: #007bff;
-      color: white;
-      cursor: pointer;
-    }
+    button { margin-top: 20px; padding: 10px; width: 100%; font-size: 16px; border: none; border-radius: 8px; background-color: #007bff; color: white; cursor: pointer; }
     button:hover { background-color: #0056b3; }
     #userInfo { font-size: 14px; margin-bottom: 10px; color: #555; }
   </style>
 </head>
 <body>
-  <h2>อัพเดทข้อมูลใบอนุญาตประกอบการขนส่ง</h2>
-
+  <h2>อัพเดทข้อมูลใบอนุญาตประกอบการ</h2>
   <div id="userInfo" style="display:none;">
-    🆔 ผู้ใช้: <span id="userId"></span>
+    🆔 ผู้ใช้: <span id="userId"></span><br>
+    📄 เลขที่ใบอนุญาต: <span id="licenseNo"></span><br>
+    🏷️ ประเภท: <span id="businessType"></span>
   </div>
-
-  <!-- ⭐ เปลี่ยน action URL เป็น Google Script URL -->
   <form id="renewForm" method="get" target="_blank">
     <input type="hidden" name="action" value="update">
     <input type="hidden" id="userIdField" name="userId">
-
-    <label>เลขที่ใบอนุญาต เช่น 1/25xx</label>
-    <input type="text" name="licenseNo" required>
+    <input type="hidden" id="licenseNoField" name="licenseNo">
+    <input type="hidden" id="businessTypeField" name="businessType">
 
     <label>ชื่อ-สกุล/ชื่อกิจการ</label>
     <input type="text" id="fullName" name="fullName" required>
 
     <label>วันที่อนุญาต</label>
-    <input type="date" name="approveDate" required>
+    <input type="date" id="approveDate" name="approveDate" required>
 
     <label>วันหมดอายุ</label>
-    <input type="date" name="expireDate" required>
+    <input type="date" id="expireDate" name="expireDate" required>
 
     <button type="submit">✅ ยืนยันต่ออายุ</button>
   </form>
@@ -63,33 +43,37 @@
   document.getElementById("renewForm").action = postUrl;
 
   const urlParams = new URLSearchParams(window.location.search);
-  let userId = urlParams.get("userId");
+  const userId = urlParams.get("userId");
+  const licenseNo = urlParams.get("licenseNo");
+  const businessType = urlParams.get("businessType");
 
-  if (!userId && urlParams.get("liff.state")) {
-    const stateParams = new URLSearchParams(urlParams.get("liff.state"));
-    userId = stateParams.get("userId");
-  }
-
-  if (userId) {
-    document.getElementById("userId").textContent = userId;
+  if (userId && licenseNo && businessType) {
     document.getElementById("userInfo").style.display = "block";
-    document.getElementById("userIdField").value = userId;
+    document.getElementById("userId").textContent = userId;
+    document.getElementById("licenseNo").textContent = licenseNo;
+    document.getElementById("businessType").textContent = businessType;
 
-    // fetch fullName มาแสดง
-    fetch(`${postUrl}?action=fetch&userId=${encodeURIComponent(userId)}`)
+    document.getElementById("userIdField").value = userId;
+    document.getElementById("licenseNoField").value = licenseNo;
+    document.getElementById("businessTypeField").value = businessType;
+
+    // ดึงข้อมูลจาก GAS
+    fetch(`${postUrl}?action=fetch&userId=${encodeURIComponent(userId)}&licenseNo=${encodeURIComponent(licenseNo)}&businessType=${encodeURIComponent(businessType)}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.status === "found") {
           document.getElementById("fullName").value = data.fullName || "";
+          document.getElementById("approveDate").value = data.approveDate || "";
+          document.getElementById("expireDate").value = data.expireDate || "";
         } else {
-          alert("❌ ไม่พบข้อมูลผู้ใช้");
+          alert("❌ ไม่พบข้อมูลใบอนุญาตนี้");
         }
       })
       .catch(() => {
         alert("❌ โหลดข้อมูลไม่สำเร็จ");
       });
   } else {
-    alert("❌ ไม่พบ userId ใน URL");
+    alert("❌ ไม่พบ parameter ที่จำเป็น");
   }
 </script>
 </body>

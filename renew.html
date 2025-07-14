@@ -4,11 +4,29 @@
   <meta charset="UTF-8" />
   <title>ยืนยันการต่ออายุใบอนุญาตประกอบการขนส่ง</title>
   <style>
-    body { font-family: 'Tahoma', sans-serif; max-width: 480px; margin: auto; padding: 20px; background: #f4f7f8; border-radius: 10px; box-shadow: 0 0 10px #ccc; }
+    body {
+      font-family: 'Tahoma', sans-serif;
+      max-width: 480px;
+      margin: auto;
+      padding: 20px;
+      background: #f4f7f8;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #ccc;
+    }
     h2 { text-align: center; color: #0066cc; }
     label { display: block; margin: 10px 0 5px; font-weight: bold; }
     input { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; }
-    button { margin-top: 20px; padding: 10px; width: 100%; font-size: 16px; border: none; border-radius: 8px; background-color: #007bff; color: white; cursor: pointer; }
+    button {
+      margin-top: 20px;
+      padding: 10px;
+      width: 100%;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+    }
     button:hover { background-color: #0056b3; }
     .msg { margin-top: 15px; font-size: 16px; text-align: center; }
     .error { color: red; }
@@ -42,7 +60,6 @@
 
 <script>
   const postUrl = "https://script.google.com/macros/s/AKfycbxMv44V7VE16_OXWgb4ue4LF6GJgd4wkEpn1i3LLWVFwb1VCxz-f9pdFhFjvfXzThvFRA/exec";
-
   const urlParams = new URLSearchParams(window.location.search);
   const userId = urlParams.get("userId");
 
@@ -50,16 +67,17 @@
     document.getElementById("userId").textContent = userId;
     document.getElementById("userInfo").style.display = "block";
 
-    // 🔥 เรียก API ไป fetch ข้อมูล
+    // 🔥 เรียก API ไป fetch ชื่อผู้ประกอบการ
     fetch(`${postUrl}?action=fetch&userId=${encodeURIComponent(userId)}`)
       .then((res) => res.json())
       .then((data) => {
+        console.log("Fetch data:", data);
         if (data.status === "found") {
-  document.getElementById("fullName").value = data.fullName || "";
-} else {
-  document.getElementById("msg").textContent = "❌ ไม่พบข้อมูลผู้ใช้";
-  document.getElementById("msg").className = "msg error";
-}
+          document.getElementById("fullName").value = data.fullName || "";
+        } else {
+          document.getElementById("msg").textContent = "❌ ไม่พบข้อมูลผู้ใช้";
+          document.getElementById("msg").className = "msg error";
+        }
       })
       .catch(() => {
         document.getElementById("msg").textContent = "❌ โหลดข้อมูลไม่สำเร็จ";

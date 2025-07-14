@@ -20,7 +20,7 @@
     📄 เลขที่ใบอนุญาต: <span id="licenseNo"></span><br>
     🏷️ ประเภท: <span id="businessType"></span>
   </div>
-  <form id="renewForm" method="get" target="_blank">
+  <form id="renewForm">
     <input type="hidden" name="action" value="update">
     <input type="hidden" id="userIdField" name="userId">
     <input type="hidden" id="licenseNoField" name="licenseNo">
@@ -40,7 +40,8 @@
 
 <script>
   const postUrl = "https://script.google.com/macros/s/AKfycbxMv44V7VE16_OXWgb4ue4LF6GJgd4wkEpn1i3LLWVFwb1VCxz-f9pdFhFjvfXzThvFRA/exec";
-  document.getElementById("renewForm").action = postUrl;
+  const form = document.getElementById("renewForm");
+  form.action = postUrl;
 
   const urlParams = new URLSearchParams(window.location.search);
   const userId = urlParams.get("userId");
@@ -75,6 +76,26 @@
   } else {
     alert("❌ ไม่พบ parameter ที่จำเป็น");
   }
+
+  form.addEventListener("submit", function(e) {
+    e.preventDefault(); // กัน default submit
+
+    const formData = new FormData(form);
+    const params = new URLSearchParams(formData);
+
+    fetch(`${postUrl}?${params.toString()}`)
+      .then(res => res.text())
+      .then(text => {
+        if (text.trim() === "OK") {
+          alert("✅ อัปเดตข้อมูลสำเร็จ");
+        } else {
+          alert("❌ อัปเดตข้อมูลไม่สำเร็จ: " + text);
+        }
+      })
+      .catch(() => {
+        alert("❌ ไม่สามารถส่งข้อมูลได้");
+      });
+  });
 </script>
 </body>
 </html>

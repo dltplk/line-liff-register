@@ -55,14 +55,11 @@
       .then((res) => res.json())
       .then((data) => {
         if (data.status === "found") {
-          document.getElementById("licenseNo").value = data.licenseNo || "";
-          document.getElementById("fullName").value = data.fullName || "";
-          document.getElementById("approveDate").value = data.approveDate || "";
-          document.getElementById("expireDate").value = data.expireDate || "";
-        } else {
-          document.getElementById("msg").textContent = "❌ ไม่พบข้อมูลผู้ใช้";
-          document.getElementById("msg").className = "msg error";
-        }
+  document.getElementById("fullName").value = data.fullName || "";
+} else {
+  document.getElementById("msg").textContent = "❌ ไม่พบข้อมูลผู้ใช้";
+  document.getElementById("msg").className = "msg error";
+}
       })
       .catch(() => {
         document.getElementById("msg").textContent = "❌ โหลดข้อมูลไม่สำเร็จ";

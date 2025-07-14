@@ -109,14 +109,16 @@ if (userId) {
     const query = `?action=update&licenseNo=${encodeURIComponent(licenseNo)}&fullName=${encodeURIComponent(fullName)}&approveDate=${encodeURIComponent(approveDate)}&expireDate=${encodeURIComponent(expireDate)}&userId=${encodeURIComponent(userId)}`;
 
     try {
-      const res = await fetch(postUrl + query);
-      const text = await res.text();
-      document.getElementById("msg").textContent = text.includes("OK") ? "✅ อัปเดตสำเร็จ" : "❌ เกิดข้อผิดพลาด: " + text;
-      document.getElementById("msg").className = text.includes("OK") ? "msg success" : "msg error";
-    } catch {
-      document.getElementById("msg").textContent = "❌ ไม่สามารถเชื่อมต่อได้";
-      document.getElementById("msg").className = "msg error";
-    }
+  const res = await fetch(postUrl + query);
+  const text = await res.text();
+  document.getElementById("msg").textContent = text.includes("OK") ? "✅ อัปเดตสำเร็จ" : "❌ เกิดข้อผิดพลาด: " + text;
+  document.getElementById("msg").className = text.includes("OK") ? "msg success" : "msg error";
+} catch (error) {
+  console.error("Fetch error:", error); // ✅ เพิ่ม log error
+  document.getElementById("msg").textContent = "❌ ไม่สามารถเชื่อมต่อได้";
+  document.getElementById("msg").className = "msg error";
+}
+
   });
 </script>
 </body>

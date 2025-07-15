@@ -24,7 +24,6 @@
   <form id="renewForm">
     <input type="hidden" name="action" value="update">
     <input type="hidden" id="userIdField" name="userId">
-    <input type="hidden" id="licenseNoField" name="licenseNo">
     <input type="hidden" id="businessTypeField" name="businessType">
      <label>เลขที่ใบอนุญาตประกอบการ</label>
     <input type="text" id="licenseNo" name="licenseNo" required>
@@ -65,7 +64,6 @@
         document.getElementById("businessType").textContent = businessType;
 
         document.getElementById("userIdField").value = userId;
-        document.getElementById("licenseNoField").value = licenseNo;
         document.getElementById("businessTypeField").value = businessType;
 
         // ดึงข้อมูลจาก GAS

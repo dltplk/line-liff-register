@@ -24,6 +24,7 @@
   <form id="renewForm">
     <input type="hidden" name="action" value="update">
     <input type="hidden" id="userIdField" name="userId">
+    <input type="hidden" id="oldLicenseNoField" name="oldLicenseNo">
     <input type="hidden" id="businessTypeField" name="businessType">
      <label>เลขที่ใบอนุญาตประกอบการ</label>
     <input type="text" id="licenseNo" name="licenseNo" required>
@@ -61,6 +62,7 @@
         document.getElementById("userInfo").style.display = "block";
         document.getElementById("userId").textContent = userId;
         document.getElementById("licenseNo").textContent = licenseNo;
+        document.getElementById("oldLicenseNoField").value = licenseNo; // licenseNo เดิมจาก URL param
         document.getElementById("businessType").textContent = businessType;
 
         document.getElementById("userIdField").value = userId;

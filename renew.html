@@ -12,6 +12,7 @@
     button:hover { background-color: #0056b3; }
     #userInfo { font-size: 14px; margin-bottom: 10px; color: #555; }
   </style>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
 <body>
   <h2>อัพเดทข้อมูลใบอนุญาตประกอบการ</h2>
@@ -43,40 +44,52 @@
   const form = document.getElementById("renewForm");
   form.action = postUrl;
 
-  const urlParams = new URLSearchParams(window.location.search);
-  const userId = urlParams.get("userId");
-  const licenseNo = urlParams.get("licenseNo");
-  const businessType = urlParams.get("businessType");
+  // เริ่มใช้งาน LIFF
+  liff.init({ liffId: "2007647972-3ZPYrdwA" })
+    .then(() => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const userId = urlParams.get("userId");
+      const licenseNo = urlParams.get("licenseNo");
+      const businessType = urlParams.get("businessType");
 
-  if (userId && licenseNo && businessType) {
-    document.getElementById("userInfo").style.display = "block";
-    document.getElementById("userId").textContent = userId;
-    document.getElementById("licenseNo").textContent = licenseNo;
-    document.getElementById("businessType").textContent = businessType;
+      console.log("✅ userId:", userId);
+      console.log("✅ licenseNo:", licenseNo);
+      console.log("✅ businessType:", businessType);
 
-    document.getElementById("userIdField").value = userId;
-    document.getElementById("licenseNoField").value = licenseNo;
-    document.getElementById("businessTypeField").value = businessType;
+      if (userId && licenseNo && businessType) {
+        document.getElementById("userInfo").style.display = "block";
+        document.getElementById("userId").textContent = userId;
+        document.getElementById("licenseNo").textContent = licenseNo;
+        document.getElementById("businessType").textContent = businessType;
 
-    // ดึงข้อมูลจาก GAS
-    fetch(`${postUrl}?action=fetch&userId=${encodeURIComponent(userId)}&licenseNo=${encodeURIComponent(licenseNo)}&businessType=${encodeURIComponent(businessType)}`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.status === "found") {
-          document.getElementById("fullName").value = data.fullName || "";
-          document.getElementById("approveDate").value = data.approveDate || "";
-          document.getElementById("expireDate").value = data.expireDate || "";
-        } else {
-          alert("❌ ไม่พบข้อมูลใบอนุญาตนี้");
-        }
-      })
-      .catch(() => {
-        alert("❌ โหลดข้อมูลไม่สำเร็จ");
-      });
-  } else {
-    alert("❌ ไม่พบ parameter ที่จำเป็น");
-  }
+        document.getElementById("userIdField").value = userId;
+        document.getElementById("licenseNoField").value = licenseNo;
+        document.getElementById("businessTypeField").value = businessType;
 
+        // ดึงข้อมูลจาก GAS
+        fetch(`${postUrl}?action=fetch&userId=${encodeURIComponent(userId)}&licenseNo=${encodeURIComponent(licenseNo)}&businessType=${encodeURIComponent(businessType)}`)
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.status === "found") {
+              document.getElementById("fullName").value = data.fullName || "";
+              document.getElementById("approveDate").value = data.approveDate || "";
+              document.getElementById("expireDate").value = data.expireDate || "";
+            } else {
+              alert("❌ ไม่พบข้อมูลใบอนุญาตนี้");
+            }
+          })
+          .catch(() => {
+            alert("❌ โหลดข้อมูลไม่สำเร็จ");
+          });
+      } else {
+        alert("❌ ไม่พบ parameter ที่จำเป็น");
+      }
+    })
+    .catch((err) => {
+      alert("❌ LIFF init error: " + err);
+    });
+
+  // เมื่อกด submit
   form.addEventListener("submit", function(e) {
     e.preventDefault(); // กัน default submit
 

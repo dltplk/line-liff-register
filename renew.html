@@ -26,6 +26,8 @@
     <input type="hidden" id="userIdField" name="userId">
     <input type="hidden" id="licenseNoField" name="licenseNo">
     <input type="hidden" id="businessTypeField" name="businessType">
+     <label>เลขที่ใบอนุญาตประกอบการ</label>
+    <input type="text" id="licenseNo" name="licenseNo" required>
 
     <label>ชื่อ-สกุล/ชื่อกิจการ</label>
     <input type="text" id="fullName" name="fullName" required>
@@ -71,6 +73,7 @@
           .then((res) => res.json())
           .then((data) => {
             if (data.status === "found") {
+              document.getElementById("licenseNo").value = data.licenseNo || "";
               document.getElementById("fullName").value = data.fullName || "";
               document.getElementById("approveDate").value = data.approveDate || "";
               document.getElementById("expireDate").value = data.expireDate || "";

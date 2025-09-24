@@ -79,10 +79,8 @@ function initBuddhistDatepicker(selector) {
     altInput: true,
     altFormat: "d/m/Y",
     allowInput: true,
-    onReady: function(selectedDates, dateStr, instance) {
-      if (selectedDates.length) instance.altInput.value = toBuddhistYear(selectedDates[0]);
-    },
-    onChange: function(selectedDates, dateStr, instance) {
+    clickOpens: true,
+    onValueUpdate: function(selectedDates, dateStr, instance) {
       if (selectedDates.length) instance.altInput.value = toBuddhistYear(selectedDates[0]);
     }
   });

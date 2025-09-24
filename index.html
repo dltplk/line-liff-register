@@ -10,11 +10,14 @@
     label { display: block; margin: 10px 0 5px; font-weight: bold; }
     input, select { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; }
     button { margin-top: 20px; padding: 10px; width: 100%; font-size: 16px; border: none; border-radius: 8px; background-color: #28a745; color: white; cursor: pointer; }
-    button:hover { background-color: #218838; }
+    button:disabled { background-color: #aaa; cursor: not-allowed; }
+    button:hover:not(:disabled) { background-color: #218838; }
     .msg { margin-top: 15px; font-size: 16px; text-align: center; }
     .error { color: red; }
     .success { color: green; }
   </style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </head>
 <body>
   <h2>ลงทะเบียนข้อมูลใบอนุญาตประกอบการ</h2>
@@ -23,8 +26,13 @@
     🆔 <span id="userId"></span>
   </div>
   <form id="registerForm" style="display:none;">
-    <label>เลขที่ใบอนุญาต เช่น 1/25xx</label>
-    <input type="text" id="licenseNo" required>
+   <label for="licenseNo">เลขที่ใบอนุญาต เช่น 1/2568</label>
+<input type="text" id="licenseNo" required 
+       pattern="^\d{1,4}/25\d{2}$" 
+       title="กรุณากรอกเป็นรูปแบบ เลขไม่เกิน 4 หลัก/ปีพ.ศ. เช่น 123/2568">
+<small id="licenseError" style="color: red; display: none;">
+  ❌ กรุณากรอกเป็นรูปแบบ เลขไม่เกิน 4 หลัก/ปีพ.ศ. เช่น 123/2568
+</small>
     <label>เลขบัตรประชาชน/นิติบุคคล</label>
     <input type="text" id="citizenId" required>
     <label>ชื่อ-สกุล/ชื่อกิจการ</label>
@@ -41,10 +49,10 @@
       <option value="รถบรรทุกไม่ประจำทาง (70 ระหว่างประเทศ)">รถบรรทุกไม่ประจำทาง (70 ระหว่างประเทศ)</option>
       <option value="รถโดยสารไม่ประจำทาง (30 ระหว่างประเทศ)">รถโดยสารไม่ประจำทาง (30 ระหว่างประเทศ)</option>
     </select>
-    <label>วันที่อนุญาต</label>
-    <input type="date" id="approveDate" required>
-    <label>วันหมดอายุ</label>
-    <input type="date" id="expireDate" required>
+   <label>วันที่อนุญาต</label>
+<input type="text" id="approveDate" required placeholder="เลือกวันที่">
+<label>วันหมดอายุ</label>
+<input type="text" id="expireDate" required placeholder="เลือกวันที่">
     <button type="submit" id="submitBtn">✅ ลงทะเบียน</button>
     <div class="msg" id="msg"></div>
   </form>
@@ -65,15 +73,69 @@ async function main() {
   document.getElementById("userInfo").style.display = "block";
   document.getElementById("registerForm").style.display = "block";
 
-  document.getElementById("submitBtn").addEventListener("click", (e) => {
+  const submitBtn = document.getElementById("submitBtn");
+
+  document.getElementById("registerForm").addEventListener("submit", (e) => {
     e.preventDefault();
+    submitBtn.disabled = true; // 🔒 ปิดปุ่มทันที
 
     const citizenId = document.getElementById("citizenId").value;
+ function toBuddhistYear(date, formatStr) {
+    let str = formatStr.replace("Y", (date.getFullYear() + 543));
+    str = str.replace("y", (date.getFullYear() + 543));
+    str = str.replace("m", ("0" + (date.getMonth() + 1)).slice(-2));
+    str = str.replace("d", ("0" + date.getDate()).slice(-2));
+    return str;
+  }
 
+  const buddhistConfig = {
+    dateFormat: "Y-m-d",     // ✅ ค่าที่ส่งไป (มาตรฐาน)
+    altInput: true,          // ✅ ช่องที่ผู้ใช้เห็น
+    altFormat: "d/m/Y",      // ✅ แสดง dd/mm/พ.ศ.
+    locale: "th",
+    onReady: function(selectedDates, dateStr, instance) {
+      if (selectedDates.length) {
+        instance.altInput.value = toBuddhistYear(selectedDates[0], "d/m/Y");
+      }
+    },
+    onChange: function(selectedDates, dateStr, instance) {
+      if (selectedDates.length) {
+        instance.altInput.value = toBuddhistYear(selectedDates[0], "d/m/Y");
+      }
+    }
+  };
+
+  flatpickr("#approveDate", buddhistConfig);
+  flatpickr("#expireDate", buddhistConfig);
+
+// ตรวจสอบการพิมพ์เลขประกอบการ
+ const licenseInput = document.getElementById("licenseNo");
+  const licenseError = document.getElementById("licenseError");
+  const regex = /^\d{1,4}\/25\d{2}$/;
+
+  // ป้องกันไม่ให้พิมพ์อักขระที่ไม่ใช่ตัวเลขหรือ /
+  licenseInput.addEventListener("keypress", (e) => {
+    const allowed = /[0-9\/]/; 
+    if (!allowed.test(e.key)) {
+      e.preventDefault(); // กันไม่ให้พิมพ์ตัวอื่น
+    }
+  });
+
+  // ตรวจสอบค่า Real-time
+  licenseInput.addEventListener("input", () => {
+    if (licenseInput.value === "") {
+      licenseError.style.display = "none";
+    } else if (!regex.test(licenseInput.value)) {
+      licenseError.style.display = "block";
+    } else {
+      licenseError.style.display = "none";
+    }
+  });
     // ตรวจสอบเลขบัตร 13 หลัก
     if (!/^\d{13}$/.test(citizenId)) {
       document.getElementById("msg").innerHTML = "❌ กรุณากรอกเลขบัตรประชาชน/นิติบุคคลให้ครบ 13 หลัก";
       document.getElementById("msg").className = "msg error";
+      submitBtn.disabled = false; // ✅ เปิดปุ่มใหม่
       return;
     }
 
@@ -91,27 +153,28 @@ async function main() {
 
     const url = `${postUrl}?${params.toString()}`;
 
-    fetch(url, {
-      method: "GET",
-    })
+    fetch(url, { method: "GET" })
     .then((res) => res.text())
     .then((text) => {
       if (text === "OK") {
         document.getElementById("msg").innerHTML = "✅ ลงทะเบียนสำเร็จ";
         document.getElementById("msg").className = "msg success";
+        document.getElementById("registerForm").reset(); // 🧹 ล้างฟอร์ม
+        submitBtn.disabled = false; // 🔓 เปิดปุ่มใหม่ กรอกข้อมูลได้ต่อ
       } else {
         document.getElementById("msg").innerHTML = "❌ ไม่สามารถลงทะเบียนได้";
         document.getElementById("msg").className = "msg error";
+        submitBtn.disabled = false; // 🔓 เปิดปุ่มใหม่
       }
     })
     .catch(() => {
       document.getElementById("msg").innerHTML = "✅ ลงทะเบียนสำเร็จ";
       document.getElementById("msg").className = "msg error";
+      submitBtn.disabled = false; // 🔓 เปิดปุ่มใหม่
     });
   });
 }
 
-// ✅ เรียก main() ข้างนอก
 main();
 </script>
 </body>

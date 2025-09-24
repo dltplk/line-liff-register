@@ -72,23 +72,7 @@ async function main() {
   document.getElementById("userId").textContent = profile.userId;
   document.getElementById("userInfo").style.display = "block";
   document.getElementById("registerForm").style.display = "block";
-
-  const submitBtn = document.getElementById("submitBtn");
-
-  document.getElementById("registerForm").addEventListener("submit", (e) => {
-    e.preventDefault();
-    submitBtn.disabled = true; // 🔒 ปิดปุ่มทันที
-
-    const citizenId = document.getElementById("citizenId").value;
- function toBuddhistYear(date, formatStr) {
-    let str = formatStr.replace("Y", (date.getFullYear() + 543));
-    str = str.replace("y", (date.getFullYear() + 543));
-    str = str.replace("m", ("0" + (date.getMonth() + 1)).slice(-2));
-    str = str.replace("d", ("0" + date.getDate()).slice(-2));
-    return str;
-  }
-
-  const buddhistConfig = {
+const buddhistConfig = {
     dateFormat: "Y-m-d",     // ✅ ค่าที่ส่งไป (มาตรฐาน)
     altInput: true,          // ✅ ช่องที่ผู้ใช้เห็น
     altFormat: "d/m/Y",      // ✅ แสดง dd/mm/พ.ศ.
@@ -107,6 +91,23 @@ async function main() {
 
   flatpickr("#approveDate", buddhistConfig);
   flatpickr("#expireDate", buddhistConfig);
+  
+  const submitBtn = document.getElementById("submitBtn");
+
+  document.getElementById("registerForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    submitBtn.disabled = true; // 🔒 ปิดปุ่มทันที
+
+    const citizenId = document.getElementById("citizenId").value;
+ function toBuddhistYear(date, formatStr) {
+    let str = formatStr.replace("Y", (date.getFullYear() + 543));
+    str = str.replace("y", (date.getFullYear() + 543));
+    str = str.replace("m", ("0" + (date.getMonth() + 1)).slice(-2));
+    str = str.replace("d", ("0" + date.getDate()).slice(-2));
+    return str;
+  }
+
+  
 
 // ตรวจสอบการพิมพ์เลขประกอบการ
  const licenseInput = document.getElementById("licenseNo");

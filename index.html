@@ -60,7 +60,13 @@
 <script>
 const liffId = "2007647972-rZOy6klP"; 
 const postUrl = "https://script.google.com/macros/s/AKfycbxMv44V7VE16_OXWgb4ue4LF6GJgd4wkEpn1i3LLWVFwb1VCxz-f9pdFhFjvfXzThvFRA/exec";
-
+function toBuddhistYear(date, formatStr) {
+    let str = formatStr.replace("Y", (date.getFullYear() + 543));
+    str = str.replace("y", (date.getFullYear() + 543));
+    str = str.replace("m", ("0" + (date.getMonth() + 1)).slice(-2));
+    str = str.replace("d", ("0" + date.getDate()).slice(-2));
+    return str;
+  }
 async function main() {
   await liff.init({ liffId });
   if (!liff.isLoggedIn()) {
@@ -99,13 +105,7 @@ const buddhistConfig = {
     submitBtn.disabled = true; // 🔒 ปิดปุ่มทันที
 
     const citizenId = document.getElementById("citizenId").value;
- function toBuddhistYear(date, formatStr) {
-    let str = formatStr.replace("Y", (date.getFullYear() + 543));
-    str = str.replace("y", (date.getFullYear() + 543));
-    str = str.replace("m", ("0" + (date.getMonth() + 1)).slice(-2));
-    str = str.replace("d", ("0" + date.getDate()).slice(-2));
-    return str;
-  }
+ 
 
   
 

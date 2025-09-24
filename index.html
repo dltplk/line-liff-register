@@ -4,9 +4,6 @@
   <meta charset="UTF-8" />
   <title>ลงทะเบียนใบอนุญาตประกอบการขนส่ง</title>
   <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/th.js"></script>
   <style>
     body { font-family: 'Tahoma', sans-serif; max-width: 480px; margin: auto; padding: 20px; background: #f4f7f8; border-radius: 10px; box-shadow: 0 0 10px #ccc; }
     h2 { text-align: center; color: #0066cc; }
@@ -64,26 +61,7 @@
 const liffId = "2007647972-rZOy6klP"; 
 const postUrl = "https://script.google.com/macros/s/AKfycbxMv44V7VE16_OXWgb4ue4LF6GJgd4wkEpn1i3LLWVFwb1VCxz-f9pdFhFjvfXzThvFRA/exec";
 
-// ฟังก์ชันแปลงวันเป็น พ.ศ.
-function toBuddhistYear(date) {
-  const day = ("0" + date.getDate()).slice(-2);
-  const month = ("0" + (date.getMonth() + 1)).slice(-2);
-  const year = date.getFullYear() + 543;
-  return `${day}/${month}/${year}`;
-}
 
-function initBuddhistDatepicker(selector){
-  flatpickr(selector,{
-    locale: flatpickr.l10ns.th,
-    dateFormat: "Y-m-d",
-    altInput: true,
-    altFormat: "d/m/Y",
-    clickOpens: true,
-    onChange: function(selectedDates, dateStr, instance){
-      if(selectedDates.length) instance.altInput.value = toBuddhistYear(selectedDates[0]);
-    }
-  });
-}
 async function main() {
   await liff.init({ liffId });
   if (!liff.isLoggedIn()) {
@@ -97,9 +75,7 @@ async function main() {
   document.getElementById("userInfo").style.display = "block";
   document.getElementById("registerForm").style.display = "block";
 
-  // เรียกใช้ปฏิทิน
-  initBuddhistDatepicker("#approveDate");
-  initBuddhistDatepicker("#expireDate");
+ 
 
   const submitBtn = document.getElementById("submitBtn");
 

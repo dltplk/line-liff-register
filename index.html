@@ -72,18 +72,15 @@ function toBuddhistYear(date) {
   return `${day}/${month}/${year}`;
 }
 
-function initBuddhistDatepicker(selector) {
-  flatpickr(selector, {
+function initBuddhistDatepicker(selector){
+  flatpickr(selector,{
     locale: flatpickr.l10ns.th,
-    dateFormat: "Y-m-d",      // ค่าที่ส่งจริงเป็น ค.ศ.
+    dateFormat: "Y-m-d",
     altInput: true,
-    altFormat: "d/m/Y",       // แสดง dd/mm/พ.ศ.
-    allowInput: false,
+    altFormat: "d/m/Y",
     clickOpens: true,
-    onChange: function(selectedDates, dateStr, instance) {
-      if (selectedDates.length) {
-        instance.altInput.value = toBuddhistYear(selectedDates[0]);
-      }
+    onChange: function(selectedDates, dateStr, instance){
+      if(selectedDates.length) instance.altInput.value = toBuddhistYear(selectedDates[0]);
     }
   });
 }

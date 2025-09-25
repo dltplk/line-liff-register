@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>ลงทะเบียนใบอนุญาตประกอบการขนส่ง</title>
   <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+  <!-- Flatpickr -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/th.js"></script>
@@ -63,6 +64,13 @@
 const liffId = "2007647972-rZOy6klP"; 
 const postUrl = "https://script.google.com/macros/s/AKfycbxMv44V7VE16_OXWgb4ue4LF6GJgd4wkEpn1i3LLWVFwb1VCxz-f9pdFhFjvfXzThvFRA/exec";
 
+// ฟังก์ชันแปลงเป็น พ.ศ.
+function toBuddhist(dateStr) {
+  const d = new Date(dateStr);
+  if (isNaN(d)) return "";
+  return `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear()+543}`;
+}
+
 async function main() {
   await liff.init({ liffId });
   if (!liff.isLoggedIn()) {
@@ -78,7 +86,7 @@ async function main() {
 
   const submitBtn = document.getElementById("submitBtn");
 
-  // ตรวจสอบเลขประกอบการและบัตรประชาชน
+  // ตรวจสอบเลขประกอบการ
   const licenseInput = document.getElementById("licenseNo");
   const licenseError = document.getElementById("licenseError");
   const regexLicense = /^\d{1,4}\/25\d{2}$/;
@@ -91,32 +99,22 @@ async function main() {
     licenseError.style.display = licenseInput.value && !regexLicense.test(licenseInput.value) ? "block" : "none";
   });
 
-  // ✅ Flatpickr แสดง พ.ศ.
-  const toBuddhistYear = (dateStr) => {
-    const d = new Date(dateStr);
-    return `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()+543}`;
-  };
-
+  // ✅ ใช้ Flatpickr กับ approveDate
   flatpickr("#approveDate", {
     locale: "th",
-    dateFormat: "Y-m-d",
-    onReady: (sel, dateStr, inst) => {
-      if(dateStr) inst._input.value = toBuddhistYear(dateStr);
-    },
+    dateFormat: "Y-m-d", // ค.ศ. สำหรับส่งข้อมูล
     onChange: (sel, dateStr, inst) => {
-      inst._input.value = toBuddhistYear(dateStr);
-      inst._input.dataset.ad = dateStr; // เก็บค่า ค.ศ.
+      inst._input.value = toBuddhist(dateStr); // แสดง พ.ศ.
+      inst._input.dataset.ad = dateStr;        // เก็บค่า ค.ศ.
     }
   });
 
+  // ✅ ใช้ Flatpickr กับ expireDate
   flatpickr("#expireDate", {
     locale: "th",
     dateFormat: "Y-m-d",
-    onReady: (sel, dateStr, inst) => {
-      if(dateStr) inst._input.value = toBuddhistYear(dateStr);
-    },
     onChange: (sel, dateStr, inst) => {
-      inst._input.value = toBuddhistYear(dateStr);
+      inst._input.value = toBuddhist(dateStr);
       inst._input.dataset.ad = dateStr;
     }
   });

@@ -4,10 +4,6 @@
   <meta charset="UTF-8" />
   <title>ลงทะเบียนใบอนุญาตประกอบการขนส่ง</title>
   <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
-  <!-- Flatpickr -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/th.js"></script>
   <style>
     body { font-family: 'Tahoma', sans-serif; max-width: 480px; margin: auto; padding: 20px; background: #f4f7f8; border-radius: 10px; box-shadow: 0 0 10px #ccc; }
     h2 { text-align: center; color: #0066cc; }
@@ -19,26 +15,6 @@
     .msg { margin-top: 15px; font-size: 16px; text-align: center; }
     .error { color: red; }
     .success { color: green; }
-
-    .date-input {
-      position: relative;
-      display: flex;
-      align-items: center;
-    }
-    .date-input input {
-      width: 100%;
-      padding: 8px 30px 8px 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-family: Tahoma, sans-serif;
-    }
-    .date-input .icon {
-      position: absolute;
-      right: 8px;
-      font-size: 16px;
-      color: #666;
-      cursor: pointer; /* ให้กดได้ */
-    }
   </style>
 </head>
 <body>
@@ -72,16 +48,10 @@
     </select>
 
     <label>วันที่อนุญาต</label>
-    <div class="date-input">
-      <input type="text" id="approveDate" placeholder="เลือกวันที่..." required>
-      <span class="icon">📅</span>
-    </div>
-
+    <input type="date" id="approveDate" required>
     <label>วันหมดอายุ</label>
-    <div class="date-input">
-      <input type="text" id="expireDate" placeholder="เลือกวันที่..." required>
-      <span class="icon">📅</span>
-    </div>
+    <input type="date" id="expireDate" required>
+
 
     <button type="submit" id="submitBtn">✅ ลงทะเบียน</button>
     <div class="msg" id="msg"></div>
@@ -91,12 +61,6 @@
 const liffId = "2007647972-rZOy6klP"; 
 const postUrl = "https://script.google.com/macros/s/AKfycbxMv44V7VE16_OXWgb4ue4LF6GJgd4wkEpn1i3LLWVFwb1VCxz-f9pdFhFjvfXzThvFRA/exec";
 
-// แปลงเป็น พ.ศ.
-function toBuddhist(dateStr) {
-  const d = new Date(dateStr);
-  if (isNaN(d)) return "";
-  return `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear()+543}`;
-}
 
 async function main() {
   await liff.init({ liffId });
@@ -111,9 +75,11 @@ async function main() {
   document.getElementById("userInfo").style.display = "block";
   document.getElementById("registerForm").style.display = "block";
 
+ 
+
   const submitBtn = document.getElementById("submitBtn");
 
-  // ตรวจสอบเลขประกอบการ
+  // ตรวจสอบเลขประกอบการและบัตรประชาชน
   const licenseInput = document.getElementById("licenseNo");
   const licenseError = document.getElementById("licenseError");
   const regexLicense = /^\d{1,4}\/25\d{2}$/;
@@ -124,36 +90,6 @@ async function main() {
   });
   licenseInput.addEventListener("input", () => {
     licenseError.style.display = licenseInput.value && !regexLicense.test(licenseInput.value) ? "block" : "none";
-  });
-
-  // Flatpickr approveDate
-  const approvePicker = flatpickr("#approveDate", {
-    locale: "th",
-    dateFormat: "Y-m-d",
-    allowInput: true,
-    clickOpens: false,
-    onChange: (sel, dateStr, inst) => {
-      inst._input.value = toBuddhist(dateStr);
-      inst._input.dataset.ad = dateStr;
-    }
-  });
-  document.querySelector("#approveDate").nextElementSibling.addEventListener("click", () => {
-    approvePicker.open();
-  });
-
-  // Flatpickr expireDate
-  const expirePicker = flatpickr("#expireDate", {
-    locale: "th",
-    dateFormat: "Y-m-d",
-    allowInput: true,
-    clickOpens: false,
-    onChange: (sel, dateStr, inst) => {
-      inst._input.value = toBuddhist(dateStr);
-      inst._input.dataset.ad = dateStr;
-    }
-  });
-  document.querySelector("#expireDate").nextElementSibling.addEventListener("click", () => {
-    expirePicker.open();
   });
 
   document.getElementById("registerForm").addEventListener("submit", e => {
@@ -176,8 +112,8 @@ async function main() {
       citizenId: "'" + citizenId,
       fullName: document.getElementById("fullName").value,
       businessType: document.getElementById("businessType").value,
-      approveDate: document.getElementById("approveDate").dataset.ad || "",
-      expireDate: document.getElementById("expireDate").dataset.ad || ""
+      approveDate: document.getElementById("approveDate").value,
+      expireDate: document.getElementById("expireDate").value
     });
 
     fetch(`${postUrl}?${params.toString()}`, { method: "GET" })
@@ -194,7 +130,7 @@ async function main() {
         submitBtn.disabled = false;
       })
       .catch(() => {
-        document.getElementById("msg").textContent = "❌ เกิดข้อผิดพลาด";
+        document.getElementById("msg").textContent = "✅ ลงทะเบียนสำเร็จ";
         document.getElementById("msg").className = "msg error";
         submitBtn.disabled = false;
       });

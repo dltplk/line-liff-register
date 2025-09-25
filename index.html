@@ -37,7 +37,7 @@
       right: 8px;
       font-size: 16px;
       color: #666;
-      pointer-events: none;
+      cursor: pointer; /* ✅ ให้กดได้ */
     }
   </style>
 </head>
@@ -71,7 +71,7 @@
       <option value="รถโดยสารไม่ประจำทาง (30 ระหว่างประเทศ)">รถโดยสารไม่ประจำทาง (30 ระหว่างประเทศ)</option>
     </select>
 
-      <label>วันที่อนุญาต</label>
+    <label>วันที่อนุญาต</label>
     <div class="date-input">
       <input type="text" id="approveDate" placeholder="เลือกวันที่..." required>
       <span class="icon">📅</span>
@@ -127,7 +127,7 @@ async function main() {
   });
 
   // ✅ ใช้ Flatpickr กับ approveDate
-  flatpickr("#approveDate", {
+  const approvePicker = flatpickr("#approveDate", {
     locale: "th",
     dateFormat: "Y-m-d", // ค.ศ. สำหรับส่งข้อมูล
     onChange: (sel, dateStr, inst) => {
@@ -135,15 +135,21 @@ async function main() {
       inst._input.dataset.ad = dateStr;        // เก็บค่า ค.ศ.
     }
   });
+  document.querySelector("#approveDate").nextElementSibling.addEventListener("click", () => {
+    approvePicker.open();
+  });
 
   // ✅ ใช้ Flatpickr กับ expireDate
-  flatpickr("#expireDate", {
+  const expirePicker = flatpickr("#expireDate", {
     locale: "th",
     dateFormat: "Y-m-d",
     onChange: (sel, dateStr, inst) => {
       inst._input.value = toBuddhist(dateStr);
       inst._input.dataset.ad = dateStr;
     }
+  });
+  document.querySelector("#expireDate").nextElementSibling.addEventListener("click", () => {
+    expirePicker.open();
   });
 
   document.getElementById("registerForm").addEventListener("submit", e => {

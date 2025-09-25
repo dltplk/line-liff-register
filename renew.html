@@ -27,7 +27,8 @@
     <input type="hidden" id="oldLicenseNoField" name="oldLicenseNo">
     <input type="hidden" id="businessTypeField" name="businessType">
      <label>เลขที่ใบอนุญาตประกอบการ</label>
-    <input type="text" id="licenseNo" name="licenseNo" required>
+    <input type="text" id="licenseNo" required pattern="^\d{1,4}/25\d{2}$" title="กรุณากรอกเป็นรูปแบบ เลขไม่เกิน 4 หลัก/ปีพ.ศ. เช่น 123/2568">
+    <small id="licenseError" style="color: red; display: none;">❌ กรุณากรอกเป็นรูปแบบ เลขไม่เกิน 4 หลัก/ปีพ.ศ. เช่น 123/2568</small>
 
     <label>ชื่อ-สกุล/ชื่อกิจการ</label>
     <input type="text" id="fullName" name="fullName" required>
@@ -91,6 +92,18 @@
     .catch((err) => {
       alert("❌ LIFF init error: " + err);
     });
+ // ตรวจสอบเลขประกอบการและบัตรประชาชน
+  const licenseInput = document.getElementById("licenseNo");
+  const licenseError = document.getElementById("licenseError");
+  const regexLicense = /^\d{1,4}\/25\d{2}$/;
+
+  licenseInput.addEventListener("keypress", e => {
+    const allowed = /[0-9\/]/;
+    if (!allowed.test(e.key)) e.preventDefault();
+  });
+  licenseInput.addEventListener("input", () => {
+    licenseError.style.display = licenseInput.value && !regexLicense.test(licenseInput.value) ? "block" : "none";
+  });
 
   // เมื่อกด submit
   form.addEventListener("submit", function(e) {

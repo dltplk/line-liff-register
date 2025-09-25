@@ -19,6 +19,26 @@
     .msg { margin-top: 15px; font-size: 16px; text-align: center; }
     .error { color: red; }
     .success { color: green; }
+     
+    .date-input {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .date-input input {
+      width: 100%;
+      padding: 8px 30px 8px 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-family: Tahoma, sans-serif;
+    }
+    .date-input .icon {
+      position: absolute;
+      right: 8px;
+      font-size: 16px;
+      color: #666;
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>
@@ -51,10 +71,17 @@
       <option value="รถโดยสารไม่ประจำทาง (30 ระหว่างประเทศ)">รถโดยสารไม่ประจำทาง (30 ระหว่างประเทศ)</option>
     </select>
 
-    <label>วันที่อนุญาต</label>
-    <input type="text" id="approveDate" required>
+      <label>วันที่อนุญาต</label>
+    <div class="date-input">
+      <input type="text" id="approveDate" placeholder="เลือกวันที่..." required>
+      <span class="icon">📅</span>
+    </div>
+
     <label>วันหมดอายุ</label>
-    <input type="text" id="expireDate" required>
+    <div class="date-input">
+      <input type="text" id="expireDate" placeholder="เลือกวันที่..." required>
+      <span class="icon">📅</span>
+    </div>
 
     <button type="submit" id="submitBtn">✅ ลงทะเบียน</button>
     <div class="msg" id="msg"></div>

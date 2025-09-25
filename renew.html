@@ -103,26 +103,33 @@ licenseInput.addEventListener("input", () => {
   }
 });
 
-  // เมื่อกด submit
-  form.addEventListener("submit", function(e) {
-    e.preventDefault(); // กัน default submit
+form.addEventListener("submit", function(e) {
+  e.preventDefault(); // กัน default submit
 
-    const formData = new FormData(form);
-    const params = new URLSearchParams(formData);
+  const submitButton = form.querySelector("button[type='submit']");
+  submitButton.disabled = true; // ปิดปุ่มทันทีเมื่อกด
+  submitButton.textContent = "⏳ กำลังประมวลผล..."; // เปลี่ยนข้อความเพื่อให้ผู้ใช้เห็น
 
-    fetch(`${postUrl}?${params.toString()}`)
-      .then(res => res.text())
-      .then(text => {
-        if (text.trim() === "OK") {
-          alert("✅ อัปเดตข้อมูลสำเร็จ");
-        } else {
-          alert("❌ อัปเดตข้อมูลไม่สำเร็จ: " + text);
-        }
-      })
-      .catch(() => {
-        alert("❌ ไม่สามารถส่งข้อมูลได้");
-      });
-  });
-</script>
+  const formData = new FormData(form);
+  const params = new URLSearchParams(formData);
+
+  fetch(`${postUrl}?${params.toString()}`)
+    .then(res => res.text())
+    .then(text => {
+      if (text.trim() === "OK") {
+        alert("✅ อัปเดตข้อมูลสำเร็จ");
+        submitButton.textContent = "✅ อัปเดตแล้ว"; // เปลี่ยนข้อความปุ่ม
+      } else {
+        alert("❌ อัปเดตข้อมูลไม่สำเร็จ: " + text);
+        submitButton.disabled = false; // เปิดปุ่มกลับ ถ้าเกิด error
+        submitButton.textContent = "✅ ยืนยันต่ออายุ";
+      }
+    })
+    .catch(() => {
+      alert("❌ ไม่สามารถส่งข้อมูลได้");
+      submitButton.disabled = false; // เปิดปุ่มกลับ ถ้าเกิด error
+      submitButton.textContent = "✅ ยืนยันต่ออายุ";
+    });
+});</script>
 </body>
 </html>

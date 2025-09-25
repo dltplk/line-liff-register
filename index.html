@@ -19,7 +19,7 @@
     .msg { margin-top: 15px; font-size: 16px; text-align: center; }
     .error { color: red; }
     .success { color: green; }
-     
+
     .date-input {
       position: relative;
       display: flex;
@@ -37,7 +37,7 @@
       right: 8px;
       font-size: 16px;
       color: #666;
-      cursor: pointer; /* ✅ ให้กดได้ */
+      cursor: pointer; /* ให้กดได้ */
     }
   </style>
 </head>
@@ -91,7 +91,7 @@
 const liffId = "2007647972-rZOy6klP"; 
 const postUrl = "https://script.google.com/macros/s/AKfycbxMv44V7VE16_OXWgb4ue4LF6GJgd4wkEpn1i3LLWVFwb1VCxz-f9pdFhFjvfXzThvFRA/exec";
 
-// ฟังก์ชันแปลงเป็น พ.ศ.
+// แปลงเป็น พ.ศ.
 function toBuddhist(dateStr) {
   const d = new Date(dateStr);
   if (isNaN(d)) return "";
@@ -126,23 +126,27 @@ async function main() {
     licenseError.style.display = licenseInput.value && !regexLicense.test(licenseInput.value) ? "block" : "none";
   });
 
-  // ✅ ใช้ Flatpickr กับ approveDate
+  // Flatpickr approveDate
   const approvePicker = flatpickr("#approveDate", {
     locale: "th",
-    dateFormat: "Y-m-d", // ค.ศ. สำหรับส่งข้อมูล
+    dateFormat: "Y-m-d",
+    allowInput: true,
+    clickOpens: false,
     onChange: (sel, dateStr, inst) => {
-      inst._input.value = toBuddhist(dateStr); // แสดง พ.ศ.
-      inst._input.dataset.ad = dateStr;        // เก็บค่า ค.ศ.
+      inst._input.value = toBuddhist(dateStr);
+      inst._input.dataset.ad = dateStr;
     }
   });
   document.querySelector("#approveDate").nextElementSibling.addEventListener("click", () => {
     approvePicker.open();
   });
 
-  // ✅ ใช้ Flatpickr กับ expireDate
+  // Flatpickr expireDate
   const expirePicker = flatpickr("#expireDate", {
     locale: "th",
     dateFormat: "Y-m-d",
+    allowInput: true,
+    clickOpens: false,
     onChange: (sel, dateStr, inst) => {
       inst._input.value = toBuddhist(dateStr);
       inst._input.dataset.ad = dateStr;
